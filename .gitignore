@@ -1,0 +1,4 @@
+__pycache__/
+.vscode
+*.jar
+server_versions
