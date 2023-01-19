@@ -1,10 +1,9 @@
 from PyQt5.QtWidgets import QMainWindow, QAction, QStackedWidget, QLabel, QVBoxLayout, QWidget, QToolBar, QPushButton, QFileDialog, QHBoxLayout, QTabWidget, QLineEdit
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QSize
-from .widgets import ToolbarItem
+from .widgets import ToolbarItem, SettingsWidget
 from . import threads
-import os
-
+from minecraft_server import Settings
 
 class MinecraftServerLauncher(QMainWindow):
     def __init__(self):
@@ -12,6 +11,9 @@ class MinecraftServerLauncher(QMainWindow):
 
         # Create the ThreadHandler
         self.thread_handler = threads.ThreadHandler()
+        self.settings = Settings()
+        
+        self.settings.load_settings()
 
         # Set window properties
         self.setWindowTitle("Minecraft Server Launcher")
@@ -57,7 +59,7 @@ class MinecraftServerLauncher(QMainWindow):
         # Create widgets for stack
         widget1 = QWidget()
         layout1 = QVBoxLayout(widget1)
-        settings_widget = SettingsWidget()
+        settings_widget = SettingsWidget(self.settings)
         layout1.addWidget(settings_widget)
         widget2 = QWidget()
         layout2 = QVBoxLayout(widget2)
@@ -79,8 +81,6 @@ class MinecraftServerLauncher(QMainWindow):
         self.action2.triggered.connect(lambda: self.stack.setCurrentIndex(1))
         self.action3.triggered.connect(lambda: self.stack.setCurrentIndex(2))
 
-
-
     def _download_handler(self):
         jar_version = self.jar_version_combo.currentText()
         download_location = self.download_location_edit.text()
@@ -93,68 +93,3 @@ class MinecraftServerLauncher(QMainWindow):
         self.thread_handler.stop_threads_by_class(threads.DownloadThread)
         # Wait for the rest to finish
         self.thread_handler.wait_for_all_threads()
-
-class SettingsWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.tabs = QTabWidget()
-        self.tabs.addTab(self.create_general_tab(), "General")
-        self.tabs.addTab(self.create_server_tab(), "Server")
-        self.tabs.addTab(self.create_about_tab(), "About")
-
-        self.settings_label = QLabel("Settings")
-        self.settings_label.setAlignment(Qt.AlignCenter)
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.settings_label)
-        self.layout.addWidget(self.tabs)
-        self.setLayout(self.layout)
-        self.setContentsMargins(0, 0, 0, 0)
-
-    def create_general_tab(self):
-        # Create widgets for general tab
-        general_tab = QWidget()
-
-        # Set layout for general tab
-        general_tab_layout = QVBoxLayout()
-        general_tab.setLayout(general_tab_layout)
-        return general_tab
-
-    def create_server_tab(self):
-        # Create widgets for server tab
-        server_tab = QWidget()
-        # Set layout for server tab
-        server_tab_layout = QVBoxLayout()
-        server_tab.setLayout(server_tab_layout)
-        
-        self.set_data_location_label = QLabel("Data Location:")
-        self.set_data_location_button = QPushButton("Select Folder")
-        self.reset_data_location_button = QPushButton("Set to default")
-        self.set_data_location_button.clicked.connect(self.set_data_location)
-        self.reset_data_location_button.clicked.connect(self.reset_data_location)
-        self.data_location_layout = QHBoxLayout()
-        self.data_location_layout.addWidget(self.set_data_location_label)
-        self.data_location_layout.addWidget(self.set_data_location_button)
-        self.data_location_layout.addWidget(self.reset_data_location_button)
-        server_tab_layout.addLayout(self.data_location_layout)
-        self.data_location = f"{os.getenv('APPDATA')}/.minecraft-server"
-        self.set_data_location_label.setText(f"Data Location: {self.data_location}")
-
-        return server_tab
-
-    def create_about_tab(self):
-        # Create widgets for about tab
-        about_tab = QWidget()
-        # Set layout for about tab
-        about_tab_layout = QVBoxLayout()
-        about_tab.setLayout(about_tab_layout)
-        return about_tab
-
-    def set_data_location(self):
-        self.data_location = QFileDialog.getExistingDirectory()
-        if not self.data_location:
-            self.data_location = f"{os.getenv('APPDATA')}/.minecraft-server"
-        self.set_data_location_label.setText("Data Location: " + self.data_location)
-
-    def reset_data_location(self):
-        self.data_location = f"{os.getenv('APPDATA')}/.minecraft-server"
-        self.set_data_location_label.setText("Data Location: " + self.data_location)
