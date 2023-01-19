@@ -3,8 +3,7 @@ import json
 import requests
 from .msl_exceptions import IncorrectServerVersion
 
-
-def verify_version(file, expected_version):
+def get_version(file):
     # Extract version.json file from the downloaded JAR file
     with zipfile.ZipFile(file, 'r') as zip_ref:
         version_json = zip_ref.read('version.json')
@@ -12,10 +11,26 @@ def verify_version(file, expected_version):
     # Load version.json as a dictionary
     version_data = json.loads(version_json)
 
+    return version_data["id"]
+
+def get_version_id(file):
+    # Extract version.json file from the downloaded JAR file
+    with zipfile.ZipFile(file, 'r') as zip_ref:
+        version_json = zip_ref.read('version.json')
+
+    # Load version.json as a dictionary
+    version_data = json.loads(version_json)
+
+    return version_data['world_version']
+
+
+def verify_version(file, expected_version):
+    version = get_version(file)
+
     # Check the version number in the version.json file
-    if version_data["id"] != expected_version:
+    if version != expected_version:
         raise IncorrectServerVersion(
-            f"Incorrect {file} version. Expected {expected_version}, got {version_data['id']}")
+            f"Incorrect {file} version. Expected {expected_version}, got {version}")
 
 
 def filter_list_dicts(data, key, value):

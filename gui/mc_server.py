@@ -4,6 +4,9 @@ from PyQt5.QtCore import Qt, QSize
 from .widgets import ToolbarItem, SettingsWidget
 from . import threads
 from minecraft_server import Settings
+from minecraft_server import Server, get_servers
+from time import sleep
+
 
 class MinecraftServerLauncher(QMainWindow):
     def __init__(self):
@@ -12,8 +15,12 @@ class MinecraftServerLauncher(QMainWindow):
         # Create the ThreadHandler
         self.thread_handler = threads.ThreadHandler()
         self.settings = Settings()
-        
         self.settings.load_settings()
+
+        servers = get_servers(self.settings.data_location)
+
+        for server in servers:
+            self.thread_handler.add_thread(threads.ServerThread, server)
 
         # Set window properties
         self.setWindowTitle("Minecraft Server Launcher")
@@ -91,5 +98,10 @@ class MinecraftServerLauncher(QMainWindow):
     def closeEvent(self, event):
         # Stop download thread
         self.thread_handler.stop_threads_by_class(threads.DownloadThread)
+        # Stop server threads
+        server_threads = self.thread_handler.get_threads_by_class(threads.ServerThread)
+        for server_thread in server_threads:
+            server_thread.stop()
+            
         # Wait for the rest to finish
         self.thread_handler.wait_for_all_threads()
