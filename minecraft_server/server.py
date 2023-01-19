@@ -71,6 +71,8 @@ class Server:
 
         self._verify_versions()
 
+        self.name = os.path.split(self.path)[-1]
+
     def get_world_folder(self):
         if os.path.isabs(self.settings.universe):
             universe_path = self.settings.universe
