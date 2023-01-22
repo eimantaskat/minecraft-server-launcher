@@ -3,7 +3,7 @@ import json
 
 
 class ServerSettings:
-    def __init__(self, version, settings_file: str) -> None:
+    def __init__(self, settings_file='', version=None) -> None:
         self.__settings_file = settings_file
         self.__version = version
         
@@ -20,6 +20,9 @@ class ServerSettings:
         self._world = 'world'           # The name of the world folder in which the level.dat resides
 
     def save_settings(self):
+        if not self.__settings_file:
+            return
+
         self.create_settings_file()
 
         data = {key: value for key, value in vars(self).items() if not key.startswith('_ServerSettings')}
@@ -28,16 +31,14 @@ class ServerSettings:
         with open(self.__settings_file, 'w') as file:
             json.dump(data, file)
 
-    def get_default_settings(self):
-        with open("minecraft_server\settings\default_server_settings.json", 'r') as file:
-            return json.load(file)
-
     def load_default_settings(self):
-        default_settings = self.get_default_settings()
+        default_settings = get_default_settings()
         self.__dict__.update(default_settings)
         self.save_settings()
 
     def load_settings(self):
+        if not self.__settings_file:
+            return
         self.create_settings_file()
         
         with open(self.__settings_file, 'r') as file:
@@ -154,3 +155,6 @@ class ServerSettings:
         self._world = value
         self.save_settings()
  
+def get_default_settings():
+    with open("minecraft_server\settings\default_server_settings.json", 'r') as file:
+        return json.load(file)
