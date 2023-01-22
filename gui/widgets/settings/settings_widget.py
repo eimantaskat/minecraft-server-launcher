@@ -1,5 +1,4 @@
-import os
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget, QPushButton, QFileDialog, QHBoxLayout, QTabWidget, QCheckBox, QGridLayout
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget, QPushButton, QFileDialog, QTabWidget, QCheckBox, QGridLayout
 from PyQt5.QtCore import Qt
 from minecraft_server import Settings
 
@@ -25,12 +24,14 @@ class SettingsWidget(QWidget):
     def create_general_tab(self):
         general_tab = QWidget()
         general_tab_layout = QVBoxLayout()
+        general_tab_layout.setAlignment(Qt.AlignTop)
         general_tab.setLayout(general_tab_layout)
         return general_tab
 
     def create_server_tab(self):
         server_tab = QWidget()
         server_tab_layout = QGridLayout()
+        server_tab_layout.setAlignment(Qt.AlignTop)
         server_tab.setLayout(server_tab_layout)
 
         # data location settings
@@ -61,18 +62,21 @@ class SettingsWidget(QWidget):
     def create_about_tab(self):
         about_tab = QWidget()
         about_tab_layout = QVBoxLayout()
+        about_tab_layout.setAlignment(Qt.AlignTop)
         about_tab.setLayout(about_tab_layout)
         return about_tab
 
     def set_data_location(self):
         self.data_location = QFileDialog.getExistingDirectory()
         if not self.data_location:
-            self.data_location = self.settings.get_default_settings()['data_location']
+            default_settings = self.settings.get_default_settings()
+            self.data_location = default_settings['_data_location']
         self.settings.data_location = self.data_location
         self.data_location_value.setText(self.data_location)
 
     def reset_data_location(self):
-        self.data_location = self.settings.get_default_settings()['data_location']
+        default_settings = self.settings.get_default_settings()
+        self.data_location = default_settings['_data_location']
         self.settings.data_location = self.data_location
         self.data_location_value.setText(self.data_location)
 

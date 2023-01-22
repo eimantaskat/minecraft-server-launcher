@@ -29,7 +29,7 @@ class ServerSettings:
             json.dump(data, file)
 
     def get_default_settings(self):
-        with open("minecraft_server\default_server_settings.json", 'r') as file:
+        with open("minecraft_server\settings\default_server_settings.json", 'r') as file:
             return json.load(file)
 
     def load_default_settings(self):

@@ -1,10 +1,15 @@
 import os
 import json
 import errno
+from PyQt5.QtCore import pyqtSignal, QObject
 
 
-class Settings:
+class Settings(QObject):
+    settings_changed = pyqtSignal()
+
     def __init__(self):
+        super().__init__()
+        
         self.__file_folder = f"{os.getenv('APPDATA')}\.minecraft-server"
         self.__settings_file = f"{self.__file_folder}\settings.json"
 
@@ -19,6 +24,7 @@ class Settings:
     @data_location.setter
     def data_location(self, value):
         self._data_location = value
+
         self.save_settings()
 
     @property
@@ -35,13 +41,14 @@ class Settings:
 
         data = {key: value for key, value in vars(self).items() if not key.startswith('_Settings')}
 
-        # with open('minecraft_server/default_settings.json', 'w') as file:
+        # with open('minecraft_server/settings/default_settings.json', 'w') as file:
         with open(self.__settings_file, 'w') as file:
             json.dump(data, file)
+        self.settings_changed.emit()
 
 
     def get_default_settings(self):
-        with open("minecraft_server\default_settings.json", 'r') as file:
+        with open("minecraft_server\settings\default_settings.json", 'r') as file:
             return json.load(file)
 
     def load_default_settings(self):
@@ -54,6 +61,8 @@ class Settings:
         
         with open(self.__settings_file, 'r') as file:
             self.__dict__.update(json.load(file))
+            
+        self.settings_changed.emit()
 
     def create_dir(self):
         try:

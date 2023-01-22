@@ -1,57 +1,7 @@
 import os
-import json
-import errno
-import glob
 from nbt import nbt
 from .server_settings import ServerSettings
-from .version import get_version, get_version_id
-
-
-def load_server(path):
-    settings_file = 'server_settings.json'
-    jar_pattern = '*.jar'
-
-    jar_files = glob.glob(os.path.join(path, jar_pattern))
-
-    versions = []
-    for file in jar_files:
-        try:
-            version = get_version(file)
-            versions.append(version)
-        except KeyError:
-            pass
-    if not versions:
-        return  # No server file found
-    elif len(versions) == 1:
-        version, = versions
-    else:
-        # TODO raise custom error
-        raise Exception(f"Found {len(versions)} *.jar files")
-
-    settings = ServerSettings(version, os.path.join(path, settings_file))
-
-    server = Server(path, settings, jar_files[0])
-
-    return server
-
-
-def get_servers(data_location):
-    try:
-        os.makedirs(data_location)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
-
-    servers_folders = [f for f in os.listdir(
-        data_location) if os.path.isdir(os.path.join(data_location, f))]
-
-    servers = []
-    for servers_folder in servers_folders:
-        server = load_server(os.path.join(data_location, servers_folder))
-        servers.append(server)
-
-    servers = [server for server in servers if server is not None]
-    return servers
+from ..version import get_version, get_version_id
 
 
 class Server:
