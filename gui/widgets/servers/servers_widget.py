@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget, QTabWidget, QComboBox, QPushButton, QFormLayout, QSpinBox, QCheckBox, QLineEdit, QGroupBox, QScrollArea
 from PyQt5.QtCore import Qt
 from ... import threads
-from minecraft_server import Settings, version, server_properties
+from minecraft_server import Settings, version, server_properties, downloader
 from .servers_selection import ServerSelection
-from minecraft_server.server import start_server, get_servers, get_default_settings
+from minecraft_server.server import Server, ServerSettings, start_server, get_servers, get_default_settings
+import os
 
 class ServersWidget(QWidget):
     def __init__(self, settings: Settings, thread_handler: threads.ThreadHandler):
@@ -385,25 +386,45 @@ class ServersWidget(QWidget):
         print('refresh servers')
 
     def create_server(self):
-        name = self.name_lineedit.text()
-        selected_version = self.version_select.currentText()
-        xmx = self.Xmx_spinbox.value()
-        xms = self.Xms_spinbox.value()
-        bonus_chest = self.bonus_chest_checkbox.isChecked()
-        erase_cache = self.erase_cache_checkbox.isChecked()
-        force_upgrade = self.force_upgrade_checkbox.isChecked()
-        safe_mode = self.safe_mode_checkbox.isChecked()
-        universe = self.universe_lineedit.text()
-        print(f"called create with values:")
-        print(f"{name = }")
-        print(f"{selected_version = }")
-        print(f"{xmx = }")
-        print(f"{xms = }")
-        print(f"{bonus_chest = }")
-        print(f"{erase_cache = }")
-        print(f"{force_upgrade = }")
-        print(f"{safe_mode = }")
-        print(f"{universe = }")
+        settings, properties = self.get_server_values()
+        version = settings['version']
+
+        server_data_path = os.path.join(self.settings.data_location, settings['name'])
+
+        if os.path.exists(server_data_path):
+            raise Exception("Server data path already exists") # TODO
+
+        os.makedirs(server_data_path)
+        jar_path = downloader.download_server_jar(version, server_data_path)
+
+        server_settings = ServerSettings()
+        self.set_server_settings(server_settings, settings)
+        server = Server(server_data_path, server_settings, jar_path)
+
+        start_server(self.thread_handler, [server], 0)
+        # TODO eula, server.properties
+
+    def set_server_settings(self, server_settings: ServerSettings, settings: dict):
+        server_settings.Xmx = settings.get('xmx')
+        server_settings.Xms = settings.get('xms')
+        server_settings.bonusChest = settings.get('bonus-chest')
+        server_settings.eraseCache = settings.get('erase-cache')
+        server_settings.forceUpgrade = settings.get('force-upgrade')
+        server_settings.safeMode = settings.get('safe-mode')
+        server_settings.universe = settings.get('universe')
+
+
+    def get_server_values(self):
+        settings = {}
+        settings['name'] = self.name_lineedit.text()
+        settings['version'] = self.version_select.currentText()
+        settings['xmx'] = self.Xmx_spinbox.value()
+        settings['xms'] = self.Xms_spinbox.value()
+        settings['bonus-chest'] = self.bonus_chest_checkbox.isChecked()
+        settings['erase-cache'] = self.erase_cache_checkbox.isChecked()
+        settings['force-upgrade'] = self.force_upgrade_checkbox.isChecked()
+        settings['safe-mode'] = self.safe_mode_checkbox.isChecked()
+        settings['universe'] = self.universe_lineedit.text()
 
         properties = {}
         properties['allow-flight'] = self.allow_flight_checkbox.isChecked()
@@ -464,7 +485,8 @@ class ServersWidget(QWidget):
         properties['white-list'] = self.white_list_checkbox.isChecked()
 
         properties = server_properties.stringify(properties)
-        # server_properties.update(r'C:\Users\Eimantas\Desktop\s\server.properties', properties)
+
+        return settings, properties
 
 class SpinBox(QSpinBox):
     def wheelEvent(self, event):

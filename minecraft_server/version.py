@@ -46,7 +46,13 @@ def get_minecraft_versions(release=True):
     url = "https://launchermeta.mojang.com/mc/game/version_manifest.json"
 
     # Retrieve the JSON data from the URL
-    response = requests.get(url)
+    ok = False
+    while not ok:
+        try:
+            response = requests.get(url)
+            ok = True
+        except requests.exceptions.ConnectionError: # TODO actual handling
+            pass
 
     # Parse the JSON data
     data = json.loads(response.text)

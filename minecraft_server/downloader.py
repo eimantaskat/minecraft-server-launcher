@@ -64,3 +64,5 @@ def download_server_jar(version, download_location):
             f"An error occured while downloading {file_name} file")
     else:
         verify_version(file_path, version)
+    
+    return file_path

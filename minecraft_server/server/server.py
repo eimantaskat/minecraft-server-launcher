@@ -31,10 +31,15 @@ class Server:
                 os.path.join(self.path, self.settings.universe))
 
         world_folder = os.path.join(universe_path, self.settings.world)
-        return world_folder
+
+        if os.path.exists(world_folder):
+            return world_folder
+        return None
 
     def get_world_version_id(self):
         world_folder = self.get_world_folder()
+        if not world_folder:
+            return None
 
         level_dat = nbt.NBTFile(os.path.join(world_folder, 'level.dat'), 'rb')
         world_version_id = level_dat['Data']['Version']['Id'].value
@@ -43,6 +48,8 @@ class Server:
 
     def get_world_version_name(self):
         world_folder = self.get_world_folder()
+        if not world_folder:
+            return None
 
         level_dat = nbt.NBTFile(os.path.join(world_folder, 'level.dat'), 'rb')
         world_version_id = level_dat['Data']['Version']['Name'].value
