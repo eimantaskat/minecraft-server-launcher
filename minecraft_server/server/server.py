@@ -2,6 +2,7 @@ import os
 from nbt import nbt
 from .server_settings import ServerSettings
 from ..version import get_version, get_version_id
+from minecraft_server.server_properties import get_timestamp
 
 
 class Server:
@@ -85,3 +86,13 @@ class Server:
 
         command.append("--nogui")
         return command
+
+    def agree_to_eula(self):
+        comments =["#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).\n"]
+        comments.append(f"#{get_timestamp()}\n")
+
+        eula_path = os.path.join(self.path, 'eula.txt')
+        with open(eula_path, 'w') as f:
+            for comment in comments:
+                f.write(comment)
+            f.write('eula=true')

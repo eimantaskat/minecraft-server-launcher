@@ -40,7 +40,13 @@ def download_server_jar(version, download_location):
     download_url = download_url['href']
 
     # Get the binary content of the fileand set the stream to True
-    jar = requests.get(download_url, stream=True)
+    ok = False
+    while not ok:
+        try:
+            jar = requests.get(download_url, stream=True)
+            ok = True
+        except requests.exceptions.ConnectionError: # TODO
+            pass
 
     # Get the total size of the file
     total_size = int(jar.headers.get("content-length", 0))

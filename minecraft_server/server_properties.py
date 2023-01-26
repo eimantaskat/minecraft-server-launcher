@@ -1,6 +1,6 @@
 import datetime
 import pytz
-
+import os
 
 def get_timestamp():
     fmt = "%a %b %d %H:%M:%S %Z %Y"
@@ -22,10 +22,10 @@ def read(path):
     return properties
 
 
-def update(filepath, new_properties):
+def update(path, new_properties):
     properties = {}
     comments = []
-    with open(filepath, 'r') as f:
+    with open(path, 'r') as f:
         for line in f:
             if line.startswith('#'):
                 if "#" in line and ":" in line:
@@ -39,7 +39,7 @@ def update(filepath, new_properties):
     for key, value in new_properties.items():
         properties[key] = value
         
-    with open(filepath, 'w') as f:
+    with open(path, 'w') as f:
         for comment in comments:
             f.write(comment)
         for key, value in properties.items():
@@ -53,4 +53,12 @@ def stringify(properties: dict):
             properties[key] = str(value)
     return properties
 
-# print(read(r'C:\Users\Eimantas\Desktop\s\server.properties'))
+def create(path, properties: dict):
+    path = os.path.join(path, 'server.properties')
+    comments =["#Minecraft server properties"]
+    comments.append(f"#{get_timestamp()}\n")
+    with open(path, 'w') as f:
+        for comment in comments:
+            f.write(comment)
+        for key, value in properties.items():
+            f.write(key + '=' + value + '\n')

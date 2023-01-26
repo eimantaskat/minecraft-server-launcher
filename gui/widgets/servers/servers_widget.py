@@ -401,8 +401,10 @@ class ServersWidget(QWidget):
         self.set_server_settings(server_settings, settings)
         server = Server(server_data_path, server_settings, jar_path)
 
-        start_server(self.thread_handler, [server], 0)
-        # TODO eula, server.properties
+        server_properties.create(server_data_path, properties)
+        server.agree_to_eula()
+        
+        self.refresh()
 
     def set_server_settings(self, server_settings: ServerSettings, settings: dict):
         server_settings.Xmx = settings.get('xmx')
