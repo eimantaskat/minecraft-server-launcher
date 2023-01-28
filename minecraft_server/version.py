@@ -5,23 +5,29 @@ from .msl_exceptions import IncorrectServerVersion
 
 def get_version(file):
     # Extract version.json file from the downloaded JAR file
-    with zipfile.ZipFile(file, 'r') as zip_ref:
-        version_json = zip_ref.read('version.json')
+    try:
+        with zipfile.ZipFile(file, 'r') as zip_ref:
+            version_json = zip_ref.read('version.json')
+            # Load version.json as a dictionary
+            version_data = json.loads(version_json)
+            version_data = version_data["id"]
+    except zipfile.BadZipFile:
+        version_data = "File corrupted"
 
-    # Load version.json as a dictionary
-    version_data = json.loads(version_json)
-
-    return version_data["id"]
+    return version_data
 
 def get_version_id(file):
     # Extract version.json file from the downloaded JAR file
-    with zipfile.ZipFile(file, 'r') as zip_ref:
-        version_json = zip_ref.read('version.json')
+    try:
+        with zipfile.ZipFile(file, 'r') as zip_ref:
+            version_json = zip_ref.read('version.json')
+            # Load version.json as a dictionary
+            version_data = json.loads(version_json)
+            version_data = version_data["world_version"]
+    except zipfile.BadZipFile:
+        version_data = "File corrupted"
 
-    # Load version.json as a dictionary
-    version_data = json.loads(version_json)
-
-    return version_data['world_version']
+    return version_data
 
 
 def verify_version(file, expected_version):

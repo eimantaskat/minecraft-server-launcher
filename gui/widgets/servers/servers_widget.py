@@ -1,10 +1,11 @@
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget, QTabWidget, QComboBox, QPushButton, QFormLayout, QSpinBox, QCheckBox, QLineEdit, QGroupBox, QScrollArea
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QEventLoop
 from ... import threads
-from minecraft_server import Settings, version, server_properties, downloader
+from minecraft_server import Settings, version, server_properties
 from .servers_selection import ServerSelection
 from minecraft_server.server import Server, ServerSettings, start_server, get_servers, get_default_settings
 import os
+import glob
 
 class ServersWidget(QWidget):
     def __init__(self, settings: Settings, thread_handler: threads.ThreadHandler):
@@ -395,7 +396,18 @@ class ServersWidget(QWidget):
             raise Exception("Server data path already exists") # TODO
 
         os.makedirs(server_data_path)
-        jar_path = downloader.download_server_jar(version, server_data_path)
+        download_thread = threads.DownloadThread(version, server_data_path)
+        loop = QEventLoop()
+        download_thread.download_finished.connect(loop.quit)
+        self.thread_handler._start_thread(download_thread)
+        loop.exec_()
+
+        jar_pattern = '*.jar'
+        jar_files = []
+        jar_files = glob.glob(os.path.join(server_data_path, jar_pattern))
+
+        # find jar file in server data path
+        jar_path = jar_files[0]
 
         server_settings = ServerSettings()
         self.set_server_settings(server_settings, settings)
@@ -405,6 +417,7 @@ class ServersWidget(QWidget):
         server.agree_to_eula()
         
         self.refresh()
+
 
     def set_server_settings(self, server_settings: ServerSettings, settings: dict):
         server_settings.Xmx = settings.get('xmx')

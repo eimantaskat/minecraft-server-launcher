@@ -13,6 +13,7 @@ def get_timestamp():
 
 
 def read(path):
+    path = os.path.join(path, 'server.properties')
     properties = {}
     with open(path, 'r') as f:
         for line in f:
@@ -23,6 +24,7 @@ def read(path):
 
 
 def update(path, new_properties):
+    path = os.path.join(path, 'server.properties')
     properties = {}
     comments = []
     with open(path, 'r') as f:
