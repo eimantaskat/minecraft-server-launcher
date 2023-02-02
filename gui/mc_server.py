@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QAction, QStackedWidget, QLabel, QVBoxLayout, QWidget, QToolBar
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QSize
-from .widgets import ToolbarItem, SettingsWidget, ServersWidget
+from .widgets import ToolbarItem, SettingsWidget, ServersWidget, ProgressBar
 from . import threads
 from minecraft_server import Settings
 
@@ -19,6 +19,10 @@ class MinecraftServerLauncher(QMainWindow):
         # Set window properties
         self.setWindowTitle("Minecraft Server Launcher")
         self.setGeometry(100, 100, 800, 600)
+        
+        # Create progress bar
+        self.progress_bar = ProgressBar()
+        # self.progress_bar.hide()
 
         # Create and configure toolbar
         self.create_toolbar()
@@ -65,7 +69,7 @@ class MinecraftServerLauncher(QMainWindow):
         
         widget2 = QWidget()
         layout2 = QVBoxLayout(widget2)
-        self.servers_widget = ServersWidget(self.settings, self.thread_handler)
+        self.servers_widget = ServersWidget(self.settings, self.thread_handler, self.progress_bar)
         layout2.addWidget(self.servers_widget)
 
         widget3 = QWidget()
@@ -77,19 +81,19 @@ class MinecraftServerLauncher(QMainWindow):
         self.stack.addWidget(widget2)
         self.stack.addWidget(widget3)
 
-        # Set stack as central widget
-        self.setCentralWidget(self.stack)
-
         # Connect actions to stacked widget
         self.action1.triggered.connect(lambda: self.stack.setCurrentIndex(0))
         self.action2.triggered.connect(lambda: self.stack.setCurrentIndex(1))
         self.action3.triggered.connect(lambda: self.stack.setCurrentIndex(2))
 
-    def _download_handler(self):
-        jar_version = self.jar_version_combo.currentText()
-        download_location = self.download_location_edit.text()
-        self.thread_handler.add_thread(
-            threads.DownloadThread, jar_version, download_location)
+        self.main_widget = QWidget()
+        self.main_layout = QVBoxLayout(self.main_widget)
+
+        self.main_layout.addWidget(self.stack)
+        self.main_layout.addWidget(self.progress_bar)
+
+        # Set stack as central widget
+        self.setCentralWidget(self.main_widget)
 
 
     def closeEvent(self, event):

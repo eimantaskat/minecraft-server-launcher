@@ -8,10 +8,11 @@ import os
 import glob
 
 class ServersWidget(QWidget):
-    def __init__(self, settings: Settings, thread_handler: threads.ThreadHandler):
+    def __init__(self, settings: Settings, thread_handler: threads.ThreadHandler, progress_bar):
         super().__init__()
         self.thread_handler = thread_handler
         self.settings = settings
+        self.progress_bar = progress_bar
 
         self.tabs = QTabWidget()
         self.tabs.addTab(self.create_servers_tab(), "Servers")
@@ -396,25 +397,31 @@ class ServersWidget(QWidget):
             raise Exception("Server data path already exists") # TODO
 
         os.makedirs(server_data_path)
-        download_thread = threads.DownloadThread(version, server_data_path)
+        download_thread = threads.DownloadThread(version, server_data_path, self.progress_bar)
         loop = QEventLoop()
         download_thread.download_finished.connect(loop.quit)
         self.thread_handler._start_thread(download_thread)
         loop.exec_()
+
+        self.progress_bar.start_loading()
 
         jar_pattern = '*.jar'
         jar_files = []
         jar_files = glob.glob(os.path.join(server_data_path, jar_pattern))
 
         # find jar file in server data path
-        jar_path = jar_files[0]
+        try:
+            jar_path = jar_files[0]
 
-        server_settings = ServerSettings()
-        self.set_server_settings(server_settings, settings)
-        server = Server(server_data_path, server_settings, jar_path)
+            server_settings = ServerSettings()
+            self.set_server_settings(server_settings, settings)
+            server = Server(server_data_path, server_settings, jar_path)
 
-        server_properties.create(server_data_path, properties)
-        server.agree_to_eula()
+            server_properties.create(server_data_path, properties)
+            server.agree_to_eula()
+        except IndexError:
+            pass
+            # TODO delete server data path
         
         self.refresh()
 

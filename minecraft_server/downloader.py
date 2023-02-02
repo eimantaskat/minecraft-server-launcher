@@ -1,12 +1,11 @@
 import os
 from bs4 import BeautifulSoup
-from tqdm import tqdm
 import requests
 from .msl_exceptions import exceptions
 from .version import verify_version
 
 
-def download_server_jar(version, download_location):
+def download_server_jar(version, download_location, progress_bar):
     """
     Downloads the Minecraft server JAR file for the selected version
     """
@@ -39,7 +38,7 @@ def download_server_jar(version, download_location):
 
     download_url = download_url['href']
 
-    # Get the binary content of the fileand set the stream to True
+    # Get the binary content of the file and set the stream to True
     ok = False
     while not ok:
         try:
@@ -55,17 +54,19 @@ def download_server_jar(version, download_location):
     file_path = os.path.join(download_location, file_name)
 
     # Initialize the progress bar
-    t = tqdm(total=total_size, unit="iB", unit_scale=True,
-             unit_divisor=1024, desc=f"Downloading {version}")
+    progress_bar.reset()
+    progress_bar.set_maximum(total_size)
+    progress_bar.set_value(0)
+    # progress_bar.set_description(f"Downloading {file_name}")
+
     # Open the file to write
     with open(file_path, "wb") as f:
         for data in jar.iter_content(block_size):
             # Update the progress bar
-            t.update(len(data))
+            progress_bar.set_value(progress_bar.value() + len(data))
             f.write(data)
-    t.close()
 
-    if total_size != 0 and t.n != total_size:
+    if total_size != 0 and progress_bar.value() != total_size:
         raise exceptions.FileDownloadError(
             f"An error occured while downloading {file_name} file")
     else:
