@@ -22,7 +22,7 @@ class MinecraftServerLauncher(QMainWindow):
         
         # Create progress bar
         self.progress_bar = ProgressBar()
-        # self.progress_bar.hide()
+        self.progress_bar.hide()
 
         # Create and configure toolbar
         self.create_toolbar()

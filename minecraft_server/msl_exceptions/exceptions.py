@@ -15,3 +15,7 @@ class FileDownloadError(Exception):
 class IncorrectServerVersion(Exception):
     def __init__(self, message):
         self.message = message
+
+class JarNotFound(Exception):
+    def __init__(self, message):
+        self.message = message

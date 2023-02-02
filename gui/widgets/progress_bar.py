@@ -5,8 +5,8 @@ class ProgressBar(QWidget):
         super().__init__(parent)
         self.progress_bar_layout = QVBoxLayout(self)
         
-        # self.label = QLabel("")
-        # self.progress_bar_layout.addWidget(self.label)
+        self.label = QLabel("")
+        self.progress_bar_layout.addWidget(self.label)
 
         self.progress_bar = QProgressBar()
         self.progress_bar_layout.addWidget(self.progress_bar)
@@ -30,8 +30,11 @@ class ProgressBar(QWidget):
     def set_value(self, value):
         self.progress_bar.setValue(value)
 
-    # def set_description(self, text):
-    #     self.label.setText(text)
+    def increment_value(self, value):
+        self.progress_bar.setValue(self.progress_bar.value() + value)
+
+    def set_description(self, text):
+        self.label.setText(text)
 
     def value(self):
         return self.progress_bar.value()

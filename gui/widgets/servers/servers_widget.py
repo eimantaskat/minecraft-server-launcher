@@ -1,11 +1,35 @@
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget, QTabWidget, QComboBox, QPushButton, QFormLayout, QSpinBox, QCheckBox, QLineEdit, QGroupBox, QScrollArea
+from PyQt5.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QVBoxLayout,
+    QWidget,
+    QTabWidget,
+    QComboBox,
+    QPushButton,
+    QFormLayout,
+    QSpinBox,
+    QCheckBox,
+    QLineEdit,
+    QGroupBox,
+    QScrollArea
+)
 from PyQt5.QtCore import Qt, QEventLoop
-from ... import threads
+
+import threads
 from minecraft_server import Settings, version, server_properties
 from .servers_selection import ServerSelection
-from minecraft_server.server import Server, ServerSettings, start_server, get_servers, get_default_settings
+from minecraft_server.server import (
+    Server,
+    ServerSettings,
+    start_server,
+    get_servers,
+    get_default_settings
+)
 import os
 import glob
+import shutil
+
+
 
 class ServersWidget(QWidget):
     def __init__(self, settings: Settings, thread_handler: threads.ThreadHandler, progress_bar):
@@ -341,8 +365,6 @@ class ServersWidget(QWidget):
         form_layout = QFormLayout()
         server_settings = get_default_settings()
 
-        # version = self.version_select.currentText()
-
         # create widgets for each setting
         self.Xmx_spinbox = QSpinBox()
         self.Xmx_spinbox.setRange(0, 2147483647)
@@ -356,17 +378,10 @@ class ServersWidget(QWidget):
         self.erase_cache_checkbox.setChecked(server_settings['_eraseCache'])
         self.force_upgrade_checkbox = QCheckBox()
         self.force_upgrade_checkbox.setChecked(server_settings['_forceUpgrade'])
-        # self.initSettings_checkbox = QCheckBox()
-        # self.initSettings_checkbox.setChecked(server_settings['_initSettings'])
-        # self.port_spinbox = QSpinBox()
-        # self.port_spinbox.setRange(0, 65536)
-        # self.port_spinbox.setValue(server_settings['_port'])
         self.safe_mode_checkbox = QCheckBox()
         self.safe_mode_checkbox.setChecked(server_settings['_safeMode'])
         self.universe_lineedit = QLineEdit()
         self.universe_lineedit.setText(server_settings['_universe'])
-        # self.world_lineedit = QLineEdit()
-        # self.world_lineedit.setText(server_settings['_world'])
 
         # add widgets to form layout
         form_layout.addRow("Xmx (MB)", self.Xmx_spinbox)
@@ -374,11 +389,8 @@ class ServersWidget(QWidget):
         form_layout.addRow("Generate bonus chest", self.bonus_chest_checkbox)
         form_layout.addRow("Erase cache", self.erase_cache_checkbox)
         form_layout.addRow("Force upgrade", self.force_upgrade_checkbox)
-        # form_layout.addRow("Load settings from file", self.initSettings_checkbox)
-        # form_layout.addRow("Port", self.port_spinbox)
         form_layout.addRow("Load level with vanilla datapack only", self.safe_mode_checkbox)
         form_layout.addRow("Universe folder", self.universe_lineedit)
-        # form_layout.addRow("World folder", self.world_lineedit)
 
         return form_layout
 
@@ -397,7 +409,14 @@ class ServersWidget(QWidget):
             raise Exception("Server data path already exists") # TODO
 
         os.makedirs(server_data_path)
-        download_thread = threads.DownloadThread(version, server_data_path, self.progress_bar)
+        
+        download_thread = threads.DownloadThread(version, server_data_path)
+        download_thread.increment_progress_bar_value.connect(self.progress_bar.increment_value)
+        download_thread.set_maximum_progress_bar_value.connect(self.progress_bar.set_maximum)
+        download_thread.set_progress_bar_description.connect(self.progress_bar.set_description)
+        download_thread.reset_progress_bar.connect(self.progress_bar.reset)
+        download_thread.show_progress_bar.connect(self.progress_bar.show)
+
         loop = QEventLoop()
         download_thread.download_finished.connect(loop.quit)
         self.thread_handler._start_thread(download_thread)
@@ -420,8 +439,10 @@ class ServersWidget(QWidget):
             server_properties.create(server_data_path, properties)
             server.agree_to_eula()
         except IndexError:
-            pass
-            # TODO delete server data path
+            raise exceptions.JarNotFound("No jar file found in server data path")
+
+        self.progress_bar.stop_loading()
+        self.progress_bar.hide()
         
         self.refresh()
 
