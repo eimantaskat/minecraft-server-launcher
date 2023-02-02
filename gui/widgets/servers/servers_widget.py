@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QEventLoop
 
 import threads
-from minecraft_server import Settings, version, server_properties
+from minecraft_server import Settings, version, server_properties, exceptions
 from .servers_selection import ServerSelection
 from minecraft_server.server import (
     Server,
