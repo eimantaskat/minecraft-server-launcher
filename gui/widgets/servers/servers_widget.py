@@ -15,9 +15,9 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QEventLoop
 
-from ... import threads
+from gui import threads
 from minecraft_server import Settings, version, server_properties, exceptions
-from .servers_selection import ServerSelection
+from gui.widgets.servers.servers_selection import ServerSelection
 from minecraft_server.server import (
     Server,
     ServerSettings,
@@ -27,8 +27,6 @@ from minecraft_server.server import (
 )
 import os
 import glob
-import shutil
-
 
 
 class ServersWidget(QWidget):
@@ -50,6 +48,7 @@ class ServersWidget(QWidget):
         self.setLayout(self.layout)
         self.setContentsMargins(0, 0, 0, 0)
 
+
     def create_servers_tab(self):
         servers_tab = QWidget()
         servers_tab_layout = QVBoxLayout()
@@ -57,7 +56,8 @@ class ServersWidget(QWidget):
         servers_tab.setLayout(servers_tab_layout)
 
         self.servers = get_servers(self.settings.data_location)
-        self.servers_selection = ServerSelection(self.servers, self.thread_handler, start_server)
+        self.servers_selection = ServerSelection(
+            self.servers, self.thread_handler, start_server)
         servers_tab_layout.addWidget(self.servers_selection)
         return servers_tab
 
@@ -90,7 +90,6 @@ class ServersWidget(QWidget):
         self.name_lineedit = QLineEdit()
         self.name_lineedit.setText(f"Minecraft server")
 
-        
         self.header_layout.addWidget(self.name_lineedit)
         self.header_layout.addWidget(self.version_select)
 
@@ -105,6 +104,7 @@ class ServersWidget(QWidget):
         servers_tab.setLayout(servers_tab_layout)
         servers_tab_layout.addWidget(server_creation)
         return servers_tab
+
 
     def create_config_layout(self):
         form_layout = QFormLayout()
@@ -354,12 +354,13 @@ class ServersWidget(QWidget):
 
         container_widget = QWidget()
         container_widget.setLayout(form_layout)
-        
+
         scroll_area = QScrollArea()
         scroll_area.setWidget(container_widget)
         scroll_area.setWidgetResizable(True)
 
         return scroll_area
+
 
     def create_settings_layout(self):
         form_layout = QFormLayout()
@@ -394,22 +395,25 @@ class ServersWidget(QWidget):
 
         return form_layout
 
+
     def refresh(self):
         self.servers = get_servers(self.settings.data_location)
         self.servers_selection.refresh(self.servers)
         print('refresh servers')
 
+
     def create_server(self):
         settings, properties = self.get_server_values()
         version = settings['version']
 
-        server_data_path = os.path.join(self.settings.data_location, settings['name'])
+        server_data_path = os.path.join(
+            self.settings.data_location, settings['name'])
 
         if os.path.exists(server_data_path):
-            raise Exception("Server data path already exists") # TODO
+            raise Exception("Server data path already exists")  # TODO
 
         os.makedirs(server_data_path)
-        
+
         download_thread = threads.DownloadThread(version, server_data_path)
         download_thread.increment_progress_bar_value.connect(self.progress_bar.increment_value)
         download_thread.set_maximum_progress_bar_value.connect(self.progress_bar.set_maximum)
@@ -443,7 +447,7 @@ class ServersWidget(QWidget):
 
         self.progress_bar.stop_loading()
         self.progress_bar.hide()
-        
+
         self.refresh()
 
 
@@ -531,9 +535,11 @@ class ServersWidget(QWidget):
 
         return settings, properties
 
+
 class SpinBox(QSpinBox):
     def wheelEvent(self, event):
         event.ignore()
+
 
 class ComboBox(QComboBox):
     def wheelEvent(self, event):

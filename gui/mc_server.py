@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QAction, QStackedWidget, QLabel, QVBoxLayout, QWidget, QToolBar
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QSize
-from .widgets import ToolbarItem, SettingsWidget, ServersWidget, ProgressBar
-from . import threads
+from gui.widgets import ToolbarItem, SettingsWidget, ServersWidget, ProgressBar
+from gui import threads
 from minecraft_server import Settings
 
 
@@ -19,7 +19,7 @@ class MinecraftServerLauncher(QMainWindow):
         # Set window properties
         self.setWindowTitle("Minecraft Server Launcher")
         self.setGeometry(100, 100, 800, 600)
-        
+
         # Create progress bar
         self.progress_bar = ProgressBar()
         self.progress_bar.hide()
@@ -31,6 +31,7 @@ class MinecraftServerLauncher(QMainWindow):
         self.create_stacked_widget()
 
         self.stack.setCurrentIndex(1)
+
 
     def create_toolbar(self):
         self.toolbar = QToolBar()
@@ -58,6 +59,7 @@ class MinecraftServerLauncher(QMainWindow):
         self.toolbar.addWidget(toolbar_widget2)
         self.toolbar.addWidget(toolbar_widget3)
 
+
     def create_stacked_widget(self):
         self.stack = QStackedWidget(self)
 
@@ -66,10 +68,11 @@ class MinecraftServerLauncher(QMainWindow):
         layout1 = QVBoxLayout(widget1)
         self.settings_widget = SettingsWidget(self.settings)
         layout1.addWidget(self.settings_widget)
-        
+
         widget2 = QWidget()
         layout2 = QVBoxLayout(widget2)
-        self.servers_widget = ServersWidget(self.settings, self.thread_handler, self.progress_bar)
+        self.servers_widget = ServersWidget(
+            self.settings, self.thread_handler, self.progress_bar)
         layout2.addWidget(self.servers_widget)
 
         widget3 = QWidget()
@@ -103,9 +106,10 @@ class MinecraftServerLauncher(QMainWindow):
         server_threads = self.thread_handler.get_threads_by_class(threads.ServerThread)
         for server_thread in server_threads:
             server_thread.stop()
-            
+
         # Wait for the rest to finish
         self.thread_handler.wait_for_all_threads()
+
 
     def refresh_widgets(self):
         # update servers widget

@@ -9,17 +9,20 @@ class Settings(QObject):
 
     def __init__(self):
         super().__init__()
-        
+
         self.__file_folder = f"{os.getenv('APPDATA')}\.minecraft-server"
-        self.__settings_file = f"{self.__file_folder}\settings.json"
+        self.__full_file_path = os.path.expandvars(self.__file_folder)
+        self.__settings_file = f"{self.__full_file_path}\settings.json"
 
         # SETTINGS
         self._data_location = f"{self.__file_folder}\servers"
         self._auto_start = False
 
+
     @property
     def data_location(self):
-        return self._data_location
+        return os.path.expandvars(self._data_location)
+
 
     @data_location.setter
     def data_location(self, value):
@@ -27,19 +30,23 @@ class Settings(QObject):
 
         self.save_settings()
 
+
     @property
     def auto_start(self):
         return self._auto_start
+
 
     @auto_start.setter
     def auto_start(self, value):
         self._auto_start = value
         self.save_settings()
 
+
     def save_settings(self):
         self.create_dir()
 
-        data = {key: value for key, value in vars(self).items() if not key.startswith('_Settings')}
+        data = {key: value for key, value in vars(
+            self).items() if not key.startswith('_Settings')}
 
         # with open('minecraft_server/settings/default_settings.json', 'w') as file:
         with open(self.__settings_file, 'w') as file:
@@ -51,22 +58,25 @@ class Settings(QObject):
         with open("minecraft_server\settings\default_settings.json", 'r') as file:
             return json.load(file)
 
+
     def load_default_settings(self):
         default_settings = self.get_default_settings()
         self.__dict__.update(default_settings)
         self.save_settings()
 
+
     def load_settings(self):
         self.create_dir()
-        
+
         with open(self.__settings_file, 'r') as file:
             self.__dict__.update(json.load(file))
-            
+
         self.settings_changed.emit()
+
 
     def create_dir(self):
         try:
-            os.makedirs(self.__file_folder)
+            os.makedirs(self.__full_file_path)
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise

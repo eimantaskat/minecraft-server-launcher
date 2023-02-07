@@ -1,20 +1,21 @@
 import os
 import errno
 import glob
-from .server_settings import ServerSettings
-from ..version import get_version
+from minecraft_server.server.server_settings import ServerSettings
+from minecraft_server.version import get_version
 from gui.threads import ServerThread
-from .server import Server
+from minecraft_server.server.server import Server
 
 
 def start_server(thread_handler, servers, index):
     print(index)
     running_servers = thread_handler.get_threads_by_class(ServerThread)
     if running_servers:
-        return print("Server is already running!") # TODO
+        return print("Server is already running!")  # TODO
 
     selected_server = servers[index]
     thread_handler.add_thread(ServerThread, selected_server)
+
 
 def load_server(path):
     settings_file = 'server_settings.json'
@@ -37,7 +38,7 @@ def load_server(path):
         # TODO raise custom error
         raise Exception(f"Found {len(versions)} *.jar files")
 
-    settings = ServerSettings(version, os.path.join(path, settings_file))
+    settings = ServerSettings(os.path.join(path, settings_file), version)
 
     server = Server(path, settings, jar_files[0])
 
@@ -45,6 +46,7 @@ def load_server(path):
 
 
 def get_servers(data_location):
+    data_location = os.path.expandvars(data_location)
     try:
         os.makedirs(data_location)
     except OSError as e:

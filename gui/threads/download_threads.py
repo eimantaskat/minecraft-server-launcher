@@ -1,4 +1,4 @@
-from .msl_thread import MslThread
+from gui.threads.msl_thread import MslThread
 from minecraft_server import exceptions, verify_version
 from PyQt5.QtCore import pyqtSignal
 import os
@@ -14,10 +14,12 @@ class DownloadThread(MslThread):
     reset_progress_bar = pyqtSignal()
     show_progress_bar = pyqtSignal()
 
+
     def __init__(self, jar_version, download_location):
         super().__init__()
         self.jar_version = jar_version
-        self.download_location = download_location
+        self.download_location = os.path.expandvars(download_location)
+
 
     def _run(self):
         file_name = f"server-{self.jar_version}.jar"
@@ -55,7 +57,7 @@ class DownloadThread(MslThread):
             try:
                 jar = requests.get(download_url, stream=True)
                 ok = True
-            except requests.exceptions.ConnectionError: # TODO
+            except requests.exceptions.ConnectionError:  # TODO
                 pass
 
         # Get the total size of the file
@@ -63,7 +65,6 @@ class DownloadThread(MslThread):
         block_size = 1024  # 1 Kibibyte
 
         file_path = os.path.join(self.download_location, file_name)
-
 
         self.reset_progress_bar.emit()
         self.set_maximum_progress_bar_value.emit(total_size)
@@ -82,5 +83,5 @@ class DownloadThread(MslThread):
                 f"An error occured while downloading {file_name} file")
         else:
             verify_version(file_path, self.jar_version)
-        
+
         self.download_finished.emit()

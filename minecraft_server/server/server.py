@@ -1,7 +1,7 @@
 import os
 from nbt import nbt
-from .server_settings import ServerSettings
-from ..version import get_version, get_version_id
+from minecraft_server.server.server_settings import ServerSettings
+from minecraft_server.version import get_version, get_version_id
 from minecraft_server.server_properties import get_timestamp
 
 
@@ -24,6 +24,7 @@ class Server:
 
         self.name = os.path.split(self.path)[-1]
 
+
     def get_world_folder(self):
         if os.path.isabs(self.settings.universe):
             universe_path = self.settings.universe
@@ -37,6 +38,7 @@ class Server:
             return world_folder
         return None
 
+
     def get_world_version_id(self):
         world_folder = self.get_world_folder()
         if not world_folder:
@@ -46,6 +48,7 @@ class Server:
         world_version_id = level_dat['Data']['Version']['Id'].value
 
         return world_version_id
+
 
     def get_world_version_name(self):
         world_folder = self.get_world_folder()
@@ -57,13 +60,16 @@ class Server:
 
         return world_version_id
 
+
     def _verify_versions(self):
         if self.world_version_id != self.server_version_id:
             self.warnings.append(f"Server and world versions do not match: server version \
             {self.server_version_name}, world version {self.world_version_name}")
 
+
     def get_run_command(self):
-        command = ["java", "-Xmx" + str(self.settings.Xmx) + "M", "-Xms" + str(self.settings.Xms) + "M", "-jar", self.server_jar]
+        command = ["java", "-Xmx" + str(self.settings.Xmx) + "M", "-Xms" + str(
+            self.settings.Xms) + "M", "-jar", self.server_jar]
         if self.settings.bonusChest:
             command.append("--bonusChest")
         if self.settings.eraseCache:
@@ -88,7 +94,7 @@ class Server:
         return command
 
     def agree_to_eula(self):
-        comments =["#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).\n"]
+        comments = ["#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).\n"]
         comments.append(f"#{get_timestamp()}\n")
 
         eula_path = os.path.join(self.path, 'eula.txt')

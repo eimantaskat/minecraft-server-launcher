@@ -1,8 +1,8 @@
 import os
 from bs4 import BeautifulSoup
 import requests
-from .msl_exceptions import exceptions
-from .version import verify_version
+from minecraft_server.msl_exceptions import exceptions
+from minecraft_server.version import verify_version
 
 
 def download_server_jar(version, download_location, progress_bar):
@@ -10,6 +10,7 @@ def download_server_jar(version, download_location, progress_bar):
     Downloads the Minecraft server JAR file for the selected version
     """
     file_name = f"server-{version}.jar"
+    download_location = os.path.expandvars(download_location)
 
     # Create the download_location directory if it does not exist
     os.makedirs(download_location, exist_ok=True)
@@ -44,7 +45,7 @@ def download_server_jar(version, download_location, progress_bar):
         try:
             jar = requests.get(download_url, stream=True)
             ok = True
-        except requests.exceptions.ConnectionError: # TODO
+        except requests.exceptions.ConnectionError:  # TODO
             pass
 
     # Get the total size of the file
@@ -71,5 +72,5 @@ def download_server_jar(version, download_location, progress_bar):
             f"An error occured while downloading {file_name} file")
     else:
         verify_version(file_path, version)
-    
+
     return file_path

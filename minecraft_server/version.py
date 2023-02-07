@@ -1,7 +1,8 @@
 import zipfile
 import json
 import requests
-from .msl_exceptions import IncorrectServerVersion
+from minecraft_server.msl_exceptions import IncorrectServerVersion
+
 
 def get_version(file):
     # Extract version.json file from the downloaded JAR file
@@ -15,6 +16,7 @@ def get_version(file):
         version_data = "File corrupted"
 
     return version_data
+
 
 def get_version_id(file):
     # Extract version.json file from the downloaded JAR file
@@ -57,7 +59,7 @@ def get_minecraft_versions(release=True):
         try:
             response = requests.get(url)
             ok = True
-        except requests.exceptions.ConnectionError: # TODO actual handling
+        except requests.exceptions.ConnectionError:  # TODO actual handling
             pass
 
     # Parse the JSON data

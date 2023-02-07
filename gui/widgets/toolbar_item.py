@@ -31,6 +31,7 @@ class ToolbarItem(QWidget):
         if is_last_clicked:
             self.mousePressEvent(None)
 
+
     def mousePressEvent(self, event):
         if ToolbarItem.last_clicked:
             ToolbarItem.last_clicked.text_label.setStyleSheet("")
@@ -43,9 +44,11 @@ class ToolbarItem(QWidget):
         self.setCursor(QCursor(Qt.ArrowCursor))
         self.action.trigger()
 
+
     def enterEvent(self, event):
         if ToolbarItem.last_clicked != self:
             self.setBackgroundRole(QPalette.Highlight)
+
 
     def leaveEvent(self, event):
         self.setBackgroundRole(QPalette.Dark)
