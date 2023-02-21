@@ -27,13 +27,13 @@ class ConsoleWidget(QWidget):
     def write(self, text):
         # Override the default write method to display messages in the console
         self.console.insertPlainText(text)
+        self.console.moveCursor(self.console.textCursor().End)
 
     def _write_to_console(self):
         text = self.input.text()
         # A method to write a message to the console
         self.input_signal.emit(text)
-        self.console.insertPlainText(f"{text}\n")
-        self.console.moveCursor(self.console.textCursor().End)
+        self.write(f"{text}\n")
         self.input.clear()
 
     def clear(self):

@@ -36,6 +36,7 @@ class ServersWidget(QWidget):
         self.settings = parent.settings
         self.progress_bar = parent.progress_bar
         self.console_widget = parent.console_widget
+        self.stack = parent.stack
 
         self.tabs = QTabWidget()
         self.tabs.addTab(self.create_servers_tab(), "Servers")
@@ -58,7 +59,7 @@ class ServersWidget(QWidget):
 
         self.servers = get_servers(self.settings.data_location)
         self.servers_selection = ServerSelection(
-            self.servers, self.thread_handler, start_server, self.console_widget)
+            self.servers, self.thread_handler, start_server, self.console_widget, self.stack)
         servers_tab_layout.addWidget(self.servers_selection)
         return servers_tab
 

@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QComboBox, QWidget, QPushButton, QGridLayout
 
 
 class ServerSelection(QWidget):
-    def __init__(self, servers, thread_handler, start_function, console_widget, parent=None):
+    def __init__(self, servers, thread_handler, start_function, console_widget, stacked_widget, parent=None):
         super().__init__(parent)
         self.servers = servers
         self.start_function = start_function
@@ -21,7 +21,7 @@ class ServerSelection(QWidget):
         # Create the start button
         self.start_button = QPushButton("Start Server")
         self.start_button.clicked.connect(lambda: self.start_function(
-            self.thread_handler, self.servers, self.server_select.currentIndex(), console_widget))
+            self.thread_handler, self.servers, self.server_select.currentIndex(), console_widget, stacked_widget))
 
         # Add the widgets to the layout
         self.servers_selection_layout.addWidget(self.server_select, 0, 0)

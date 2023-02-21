@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QProcess, pyqtSignal
+from PyQt5.QtCore import QProcess, pyqtSignal, QTimer
 from .msl_thread import MslThread
 import os
 
@@ -6,6 +6,17 @@ import os
 class Process(QProcess):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.running = False
+
+    def write(self, data):
+        super().write(data)
+
+    def start(self, command):
+        self.running = True
+        super().start(command)
+
+    def waitForFinished(self):
+        super().waitForFinished(-1)
 
     def __del__(self):
         self.waitForFinished()
@@ -42,16 +53,17 @@ class ServerThread(MslThread):
         if command == 'stop':
             self.stop()
         else:
-            self.server_process.write(f'{command}\n'.encode())
+            self.server_process.write(bytes(f'{command}\n'.encode()))
+        self._read_process_output()
 
 
     def stop(self):
         self.server_process.write(b'stop\n')
         self.server_process.waitForBytesWritten()
+        self._read_process_output()
+        self.server_process.running = False
         self.server_process.waitForFinished()
         self.stopped.emit()
-        self._read_process_output()
-        del self.server_process
 
 
     def _read_process_output(self):
@@ -60,6 +72,8 @@ class ServerThread(MslThread):
             if not output:
                 output = self.server_process.readAllStandardError()
         except RuntimeError:
+            return
+        except AttributeError:
             return
 
         output_str = str(output, 'utf-8')
