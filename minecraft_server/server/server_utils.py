@@ -7,7 +7,7 @@ from gui.threads import ServerThread
 from minecraft_server.server.server import Server
 
 
-def start_server(thread_handler, servers, index, console_widget, stack_widget):
+def start_server(thread_handler, servers, index, console_widget, toolbar_widget):
     print(index)
     running_servers = thread_handler.get_threads_by_class(ServerThread)
     if running_servers:
@@ -17,10 +17,10 @@ def start_server(thread_handler, servers, index, console_widget, stack_widget):
     selected_server = servers[index]
     server_thread = ServerThread(selected_server)
     server_thread.console_output.connect(console_widget.write)
-    # server_thread.stopped.connect(console_widget.clear)
+    server_thread.stopped.connect(console_widget.clear)
     console_widget.input_signal.connect(server_thread.send_command)
     thread_handler.start_thread(server_thread)
-    stack_widget.setCurrentIndex(2)
+    toolbar_widget.mousePressEvent(None)
 
 
 def load_server(path):

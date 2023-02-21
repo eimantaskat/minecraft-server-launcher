@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QTextEdit, QLineEdit, QVBoxLayout
 from PyQt5.QtCore import pyqtSignal
-
+from PyQt5 import QtGui
 
 class ConsoleWidget(QWidget):
     input_signal = pyqtSignal(str)
@@ -9,10 +9,10 @@ class ConsoleWidget(QWidget):
         super().__init__()
 
         # Create a QTextEdit widget for the console
-        self.console = QTextEdit(self)
+        self.console = QTextEdit()
         self.console.setReadOnly(True)
         self.console.setMinimumHeight(100)
-        self.console.setStyleSheet("border: 0px;")
+        # self.console.setStyleSheet("border: 0px;")
 
         self.input = QLineEdit(self)
         self.input.returnPressed.connect(self._write_to_console)
@@ -24,10 +24,15 @@ class ConsoleWidget(QWidget):
         layout.setSpacing(0)
         self.setLayout(layout)
 
+
     def write(self, text):
-        # Override the default write method to display messages in the console
+        cursor = self.console.textCursor()
+        cursor.movePosition(QtGui.QTextCursor.End)
+        self.console.setTextCursor(cursor)
         self.console.insertPlainText(text)
-        self.console.moveCursor(self.console.textCursor().End)
+        self.console.verticalScrollBar().setValue(self.console.verticalScrollBar().maximum())
+
+
 
     def _write_to_console(self):
         text = self.input.text()
@@ -35,6 +40,7 @@ class ConsoleWidget(QWidget):
         self.input_signal.emit(text)
         self.write(f"{text}\n")
         self.input.clear()
+
 
     def clear(self):
         self.console.clear()

@@ -35,11 +35,11 @@ class ServersWidget(QWidget):
         self.thread_handler = parent.thread_handler
         self.settings = parent.settings
         self.progress_bar = parent.progress_bar
-        self.console_widget = parent.console_widget
-        self.stack = parent.stack
+        self.console_widget = parent.running_servers_widget.console_widget
+        self.toolbar_widget = parent.toolbar_widget3
 
         self.tabs = QTabWidget()
-        self.tabs.addTab(self.create_servers_tab(), "Servers")
+        self.tabs.addTab(self.start_servers_tab(), "Servers")
         self.tabs.addTab(self.create_new_server_tab(), "New server")
 
         self.servers_label = QLabel("Servers")
@@ -51,7 +51,7 @@ class ServersWidget(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
 
 
-    def create_servers_tab(self):
+    def start_servers_tab(self):
         servers_tab = QWidget()
         servers_tab_layout = QVBoxLayout()
         servers_tab_layout.setAlignment(Qt.AlignTop)
@@ -59,7 +59,7 @@ class ServersWidget(QWidget):
 
         self.servers = get_servers(self.settings.data_location)
         self.servers_selection = ServerSelection(
-            self.servers, self.thread_handler, start_server, self.console_widget, self.stack)
+            self.servers, self.thread_handler, start_server, self.console_widget, self.toolbar_widget)
         servers_tab_layout.addWidget(self.servers_selection)
         return servers_tab
 

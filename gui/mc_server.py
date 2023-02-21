@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import QMainWindow, QAction, QStackedWidget, QLabel, QVBoxLayout, QWidget, QToolBar
+from PyQt5.QtWidgets import QMainWindow, QAction, QStackedWidget, QVBoxLayout, QWidget, QToolBar
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QSize, QEventLoop, QTimer
-from gui.widgets import ToolbarItem, SettingsWidget, ServersWidget, ProgressBar, ConsoleWidget
+from gui.widgets import ToolbarItem, SettingsWidget, ServersWidget, ProgressBar, RunningServersWidget
 from gui import threads
 from minecraft_server import Settings
 
@@ -50,21 +50,21 @@ class MinecraftServerLauncher(QMainWindow):
         self.action2 = QAction(icon2, "Servers", self)
         self.action3 = QAction(icon3, "Running servers", self)
 
-        toolbar_widget1 = ToolbarItem(self.action1, icon1, "Settings")
-        toolbar_widget2 = ToolbarItem(self.action2, icon2, "Servers", True)
-        toolbar_widget3 = ToolbarItem(self.action3, icon3, "Running servers")
+        self.toolbar_widget1 = ToolbarItem(self.action1, icon1, "Settings")
+        self.toolbar_widget2 = ToolbarItem(self.action2, icon2, "Servers", True)
+        self.toolbar_widget3 = ToolbarItem(self.action3, icon3, "Running servers")
 
         # Add actions to toolbar
-        self.toolbar.addWidget(toolbar_widget1)
-        self.toolbar.addWidget(toolbar_widget2)
-        self.toolbar.addWidget(toolbar_widget3)
+        self.toolbar.addWidget(self.toolbar_widget1)
+        self.toolbar.addWidget(self.toolbar_widget2)
+        self.toolbar.addWidget(self.toolbar_widget3)
 
 
     def create_stacked_widget(self):
         self.stack = QStackedWidget(self)
 
         self.settings_widget = SettingsWidget(self.settings)
-        self.console_widget = ConsoleWidget()
+        self.running_servers_widget = RunningServersWidget()
         self.servers_widget = ServersWidget(self)
 
         # Create widgets for stack
@@ -76,14 +76,14 @@ class MinecraftServerLauncher(QMainWindow):
         servers_layout = QVBoxLayout(servers_widget)
         servers_layout.addWidget(self.servers_widget)
 
-        console_widget = QWidget()
-        console_layout = QVBoxLayout(console_widget)
-        console_layout.addWidget(self.console_widget)
+        running_servers_widget = QWidget()
+        running_servers_layout = QVBoxLayout(running_servers_widget)
+        running_servers_layout.addWidget(self.running_servers_widget)
 
         # Add widgets to stack
         self.stack.addWidget(settings_widget)
         self.stack.addWidget(servers_widget)
-        self.stack.addWidget(console_widget)
+        self.stack.addWidget(running_servers_widget)
 
         # Connect actions to stacked widget
         self.action1.triggered.connect(lambda: self.stack.setCurrentIndex(0))
