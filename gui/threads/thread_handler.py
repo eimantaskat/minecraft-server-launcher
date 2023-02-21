@@ -10,7 +10,7 @@ class ThreadHandler:
         self.threads = []
 
 
-    def _start_thread(self, thread):
+    def start_thread(self, thread):
         """
         Run thread
         """
@@ -26,12 +26,21 @@ class ThreadHandler:
         Create and run new thread
         """
         thread = thread_class(*args, **kwargs)
-        self._start_thread(thread)
+        self.start_thread(thread)
 
 
     def stop_all_threads(self):
         """
         Stop all running threads
+        """
+        for thread in self.threads:
+            print("Stopping thread:", thread)
+            thread.stop()
+        print("All threads stopped")
+
+    def terminate_all_threads(self):
+        """
+        Terminate all running threads
         """
         for thread in self.threads:
             thread.terminate()
@@ -92,4 +101,5 @@ class ThreadHandler:
 
     def _handle_thread_exception(self, exception, message):
         # TODO handle exception
+        print("Exception in thread:")
         print(message)

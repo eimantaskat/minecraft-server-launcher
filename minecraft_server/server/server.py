@@ -69,7 +69,7 @@ class Server:
 
     def get_run_command(self):
         command = ["java", "-Xmx" + str(self.settings.Xmx) + "M", "-Xms" + str(
-            self.settings.Xms) + "M", "-jar", self.server_jar]
+            self.settings.Xms) + "M", "-jar", f'"{self.server_jar}"']
         if self.settings.bonusChest:
             command.append("--bonusChest")
         if self.settings.eraseCache:

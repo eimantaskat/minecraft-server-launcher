@@ -20,3 +20,6 @@ class MslThread(QThread):
 
     def _run(self):
         raise NotImplementedError("You must implement _run method")
+
+    def stop(self):
+        raise NotImplementedError("You must implement stop method")

@@ -85,3 +85,7 @@ class DownloadThread(MslThread):
             verify_version(file_path, self.jar_version)
 
         self.download_finished.emit()
+
+
+    def stop(self):
+        self.terminate() # TODO

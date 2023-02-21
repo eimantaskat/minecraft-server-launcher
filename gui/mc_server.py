@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QAction, QStackedWidget, QLabel, QVBoxLayout, QWidget, QToolBar
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt, QSize
-from gui.widgets import ToolbarItem, SettingsWidget, ServersWidget, ProgressBar
+from PyQt5.QtCore import Qt, QSize, QEventLoop, QTimer
+from gui.widgets import ToolbarItem, SettingsWidget, ServersWidget, ProgressBar, ConsoleWidget
 from gui import threads
 from minecraft_server import Settings
 
@@ -63,26 +63,27 @@ class MinecraftServerLauncher(QMainWindow):
     def create_stacked_widget(self):
         self.stack = QStackedWidget(self)
 
-        # Create widgets for stack
-        widget1 = QWidget()
-        layout1 = QVBoxLayout(widget1)
         self.settings_widget = SettingsWidget(self.settings)
-        layout1.addWidget(self.settings_widget)
+        self.console_widget = ConsoleWidget()
+        self.servers_widget = ServersWidget(self)
 
-        widget2 = QWidget()
-        layout2 = QVBoxLayout(widget2)
-        self.servers_widget = ServersWidget(
-            self.settings, self.thread_handler, self.progress_bar)
-        layout2.addWidget(self.servers_widget)
+        # Create widgets for stack
+        settings_widget = QWidget()
+        settings_layout = QVBoxLayout(settings_widget)
+        settings_layout.addWidget(self.settings_widget)
 
-        widget3 = QWidget()
-        layout3 = QVBoxLayout(widget3)
-        layout3.addWidget(QLabel("Content for option 3"))
+        servers_widget = QWidget()
+        servers_layout = QVBoxLayout(servers_widget)
+        servers_layout.addWidget(self.servers_widget)
+
+        console_widget = QWidget()
+        console_layout = QVBoxLayout(console_widget)
+        console_layout.addWidget(self.console_widget)
 
         # Add widgets to stack
-        self.stack.addWidget(widget1)
-        self.stack.addWidget(widget2)
-        self.stack.addWidget(widget3)
+        self.stack.addWidget(settings_widget)
+        self.stack.addWidget(servers_widget)
+        self.stack.addWidget(console_widget)
 
         # Connect actions to stacked widget
         self.action1.triggered.connect(lambda: self.stack.setCurrentIndex(0))
@@ -100,15 +101,15 @@ class MinecraftServerLauncher(QMainWindow):
 
 
     def closeEvent(self, event):
-        # Stop download thread
-        self.thread_handler.stop_threads_by_class(threads.DownloadThread)
-        # Stop server threads
-        server_threads = self.thread_handler.get_threads_by_class(threads.ServerThread)
-        for server_thread in server_threads:
-            server_thread.stop()
+        loop = QEventLoop()
+        self.exit_thread = threads.ExitThread(self.thread_handler)
+        self.exit_thread.finished.connect(loop.quit)
+        self.exit_thread.start()
 
-        # Wait for the rest to finish
-        self.thread_handler.wait_for_all_threads()
+        timer = QTimer()
+        timer.timeout.connect(lambda: None)
+        timer.start(0)
+        loop.exec_()
 
 
     def refresh_widgets(self):

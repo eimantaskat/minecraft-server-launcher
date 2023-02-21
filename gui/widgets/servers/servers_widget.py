@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QEventLoop
 
 from gui import threads
-from minecraft_server import Settings, version, server_properties, exceptions
+from minecraft_server import version, server_properties, exceptions
 from gui.widgets.servers.servers_selection import ServerSelection
 from minecraft_server.server import (
     Server,
@@ -30,11 +30,12 @@ import glob
 
 
 class ServersWidget(QWidget):
-    def __init__(self, settings: Settings, thread_handler: threads.ThreadHandler, progress_bar):
+    def __init__(self, parent):
         super().__init__()
-        self.thread_handler = thread_handler
-        self.settings = settings
-        self.progress_bar = progress_bar
+        self.thread_handler = parent.thread_handler
+        self.settings = parent.settings
+        self.progress_bar = parent.progress_bar
+        self.console_widget = parent.console_widget
 
         self.tabs = QTabWidget()
         self.tabs.addTab(self.create_servers_tab(), "Servers")
@@ -57,7 +58,7 @@ class ServersWidget(QWidget):
 
         self.servers = get_servers(self.settings.data_location)
         self.servers_selection = ServerSelection(
-            self.servers, self.thread_handler, start_server)
+            self.servers, self.thread_handler, start_server, self.console_widget)
         servers_tab_layout.addWidget(self.servers_selection)
         return servers_tab
 
@@ -423,7 +424,7 @@ class ServersWidget(QWidget):
 
         loop = QEventLoop()
         download_thread.download_finished.connect(loop.quit)
-        self.thread_handler._start_thread(download_thread)
+        self.thread_handler.start_thread(download_thread)
         loop.exec_()
 
         self.progress_bar.start_loading()
