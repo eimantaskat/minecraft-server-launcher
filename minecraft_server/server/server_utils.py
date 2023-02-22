@@ -11,13 +11,13 @@ def start_server(thread_handler, servers, index, console_widget, toolbar_widget)
     print(index)
     running_servers = thread_handler.get_threads_by_class(ServerThread)
     if running_servers:
-        return print("Server is already running!")  # TODO
+        return print("Server is already running!")
 
     console_widget.clear()
     selected_server = servers[index]
     server_thread = ServerThread(selected_server)
     server_thread.console_output.connect(console_widget.write)
-    server_thread.stopped.connect(console_widget.clear)
+    # server_thread.stopped.connect(console_widget.clear)
     console_widget.input_signal.connect(server_thread.send_command)
     thread_handler.start_thread(server_thread)
     toolbar_widget.mousePressEvent(None)

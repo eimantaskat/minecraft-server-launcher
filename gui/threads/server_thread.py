@@ -1,5 +1,6 @@
 from PyQt5.QtCore import QProcess, pyqtSignal, QTimer
 from .msl_thread import MslThread
+from threading import Timer
 import os
 
 
@@ -59,9 +60,9 @@ class ServerThread(MslThread):
 
     def stop(self): # TODO need to run in separate thread might fix crashing
         self.server_process.write(b'stop\n')
-        self.server_process.waitForBytesWritten()
-        self._read_process_output()
-        self.server_process.waitForFinished()
+        # self.server_process.waitForBytesWritten()
+        # self._read_process_output()
+        # self.server_process.waitForFinished()
         self.server_process.running = False
         
         self.stopped.emit()
