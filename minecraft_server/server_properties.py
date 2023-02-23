@@ -15,7 +15,7 @@ def get_timestamp():
 
 
 def read(path):
-    path = os.path.join(path, 'server.properties')
+    path = os.path.abspath(os.path.join(path, "server.properties"))
     properties = {}
     with open(path, 'r') as f:
         for line in f:
@@ -59,12 +59,42 @@ def stringify(properties: dict):
     return properties
 
 
+def unstringify(properties: dict):
+    for key, value in properties.items():
+        if key != 'motd':
+            if isinstance(value, bool):
+                properties[key] = value
+            elif isinstance(value, str) and value.lower() == 'true':
+                properties[key] = True
+            elif isinstance(value, str) and value.lower() == 'false':
+                properties[key] = False
+            else:
+                try:
+                    properties[key] = int(value)
+                except ValueError:
+                    try:
+                        properties[key] = float(value)
+                    except ValueError:
+                        properties[key] = value
+        else:
+            properties[key] = value
+
+    properties['gamemode'] = properties['gamemode'].capitalize()
+    properties['difficulty'] = properties['difficulty'].capitalize()
+    return properties
+
+
+
 def create(path, properties: dict):
     path = os.path.join(path, 'server.properties')
-    comments = ["#Minecraft server properties"]
+    comments = ["#Minecraft server properties\n"]
     comments.append(f"#{get_timestamp()}\n")
     with open(path, 'w') as f:
         for comment in comments:
             f.write(comment)
         for key, value in properties.items():
             f.write(key + '=' + value + '\n')
+
+
+def get_default_server_properties():
+    return read("./minecraft_server/settings")

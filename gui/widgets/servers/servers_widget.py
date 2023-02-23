@@ -109,193 +109,196 @@ class ServersWidget(QWidget):
 
 
     def create_config_layout(self):
+        default_server_properties = server_properties.get_default_server_properties()
+        default_server_properties = server_properties.unstringify(default_server_properties)
         form_layout = QFormLayout()
 
         self.allow_flight_checkbox = QCheckBox()
-        self.allow_flight_checkbox.setChecked(False)
+        self.allow_flight_checkbox.setChecked(default_server_properties['allow-flight'])
 
         self.allow_nether_checkbox = QCheckBox()
-        self.allow_nether_checkbox.setChecked(True)
+        self.allow_nether_checkbox.setChecked(default_server_properties['allow-nether'])
 
         self.broadcast_console_to_ops_checkbox = QCheckBox()
-        self.broadcast_console_to_ops_checkbox.setChecked(True)
+        self.broadcast_console_to_ops_checkbox.setChecked(default_server_properties['broadcast-console-to-ops'])
 
         self.broadcast_rcon_to_ops_checkbox = QCheckBox()
-        self.broadcast_rcon_to_ops_checkbox.setChecked(True)
+        self.broadcast_rcon_to_ops_checkbox.setChecked(default_server_properties['broadcast-rcon-to-ops'])
 
         self.difficulity_combobox = ComboBox()
         self.difficulity_combobox.addItems(['Peaceful', 'Easy', 'Normal', 'Hard'])
-        self.difficulity_combobox.setCurrentIndex(1)
+        self.difficulity_combobox.setCurrentText(default_server_properties['difficulty'])
 
         self.enable_command_block_checkbox = QCheckBox()
-        self.enable_command_block_checkbox.setChecked(False)
+        self.enable_command_block_checkbox.setChecked(default_server_properties['enable-command-block'])
 
         self.enable_jmx_monitoring_checkbox = QCheckBox()
-        self.enable_jmx_monitoring_checkbox.setChecked(False)
+        self.enable_jmx_monitoring_checkbox.setChecked(default_server_properties['enable-jmx-monitoring'])
 
         self.enable_query_checkbox = QCheckBox()
-        self.enable_query_checkbox.setChecked(False)
+        self.enable_query_checkbox.setChecked(default_server_properties['enable-query'])
 
         self.enable_rcon_checkbox = QCheckBox()
-        self.enable_rcon_checkbox.setChecked(False)
+        self.enable_rcon_checkbox.setChecked(default_server_properties['enable-rcon'])
 
         self.enable_status_checkbox = QCheckBox()
-        self.enable_status_checkbox.setChecked(True)
+        self.enable_status_checkbox.setChecked(default_server_properties['enable-status'])
 
         self.enforce_secure_profile_checkbox = QCheckBox()
-        self.enforce_secure_profile_checkbox.setChecked(True)
+        self.enforce_secure_profile_checkbox.setChecked(default_server_properties['enforce-secure-profile'])
 
         self.enforce_whitelist_checkbox = QCheckBox()
-        self.enforce_whitelist_checkbox.setChecked(False)
+        self.enforce_whitelist_checkbox.setChecked(default_server_properties['enforce-whitelist'])
 
         self.entity_broadcast_range_percentage_spinbox = SpinBox()
         self.entity_broadcast_range_percentage_spinbox.setRange(10, 100)
-        self.entity_broadcast_range_percentage_spinbox.setValue(100)
+        self.entity_broadcast_range_percentage_spinbox.setValue(default_server_properties['entity-broadcast-range-percentage'])
 
         self.force_gamemode_checkbox = QCheckBox()
-        self.force_gamemode_checkbox.setChecked(False)
+        self.force_gamemode_checkbox.setChecked(default_server_properties['force-gamemode'])
 
         self.function_permission_level_spinbox = SpinBox()
         self.function_permission_level_spinbox.setRange(1, 4)
-        self.function_permission_level_spinbox.setValue(2)
+        self.function_permission_level_spinbox.setValue(default_server_properties['function-permission-level'])
 
         self.gamemode_combobox = ComboBox()
         self.gamemode_combobox.addItems(['Survival', 'Creative', 'Adventure', 'Spectator'])
+        self.gamemode_combobox.setCurrentText(default_server_properties['gamemode'])
 
         self.generate_structures_checkbox = QCheckBox()
-        self.generate_structures_checkbox.setChecked(True)
+        self.generate_structures_checkbox.setChecked(default_server_properties['generate-structures'])
 
         self.generator_settings_lineedit = QLineEdit()
-        self.generator_settings_lineedit.setText('{}')
+        self.generator_settings_lineedit.setText(default_server_properties['generator-settings'])
 
         self.hardcore_checkbox = QCheckBox()
-        self.hardcore_checkbox.setChecked(False)
+        self.hardcore_checkbox.setChecked(default_server_properties['hardcore'])
 
         self.hide_online_players_checkbox = QCheckBox()
-        self.hide_online_players_checkbox.setChecked(False)
+        self.hide_online_players_checkbox.setChecked(default_server_properties['hide-online-players'])
 
         self.initial_disabled_packs_lineedit = QLineEdit()
-        self.initial_disabled_packs_lineedit.setText('')
+        self.initial_disabled_packs_lineedit.setText(default_server_properties['initial-disabled-packs'])
 
         self.initial_enabled_packs_lineedit = QLineEdit()
-        self.initial_enabled_packs_lineedit.setText('vanilla')
+        self.initial_enabled_packs_lineedit.setText(default_server_properties['initial-enabled-packs'])
 
         self.level_name_lineedit = QLineEdit()
-        self.level_name_lineedit.setText('world')
+        self.level_name_lineedit.setText(default_server_properties['level-name'])
 
         self.level_seed_lineedit = QLineEdit()
-        self.level_seed_lineedit.setText('')
+        self.level_seed_lineedit.setText(default_server_properties['level-seed'])
 
         self.level_type_lineedit = QLineEdit()
-        self.level_type_lineedit.setText('minecraft\:normal')
+        self.level_type_lineedit.setText(default_server_properties['level-type'])
 
         self.max_chained_neighbor_updates_spinbox = SpinBox()
         self.max_chained_neighbor_updates_spinbox.setRange(-2147483648, 2147483647)
-        self.max_chained_neighbor_updates_spinbox.setValue(1000000)
+        self.max_chained_neighbor_updates_spinbox.setValue(default_server_properties['max-chained-neighbor-updates'])
 
         self.max_players_spinbox = SpinBox()
         self.max_players_spinbox.setRange(0, 2147483647)
-        self.max_players_spinbox.setValue(20)
+        self.max_players_spinbox.setValue(default_server_properties['max-players'])
 
         self.max_tick_time_spinbox = SpinBox()
         self.max_tick_time_spinbox.setRange(-1, 2147483647)
-        self.max_tick_time_spinbox.setValue(60000)
+        self.max_tick_time_spinbox.setValue(default_server_properties['max-tick-time'])
 
         self.max_world_size_spinbox = SpinBox()
         self.max_world_size_spinbox.setRange(1, 29999984)
-        self.max_world_size_spinbox.setValue(29999984)
+        self.max_world_size_spinbox.setValue(default_server_properties['max-world-size'])
 
         self.motd_lineedit = QLineEdit()
         self.motd_lineedit.setMaxLength(59)
-        self.motd_lineedit.setText('A Minecraft Server')
+        self.motd_lineedit.setText(default_server_properties['motd'])
 
         self.network_compression_threshold_spinbox = SpinBox()
         self.network_compression_threshold_spinbox.setRange(-2147483648, 2147483647)
-        self.network_compression_threshold_spinbox.setValue(256)
+        self.network_compression_threshold_spinbox.setValue(default_server_properties['network-compression-threshold'])
 
         self.online_mode_checkbox = QCheckBox()
-        self.online_mode_checkbox.setChecked(True)
+        self.online_mode_checkbox.setChecked(default_server_properties['online-mode'])
         
         self.op_permission_level_spinbox = SpinBox()
         self.op_permission_level_spinbox.setRange(0, 4)
-        self.op_permission_level_spinbox.setValue(4)
+        self.op_permission_level_spinbox.setValue(default_server_properties['op-permission-level'])
 
         self.player_idle_timeout_spinbox = SpinBox()
         self.player_idle_timeout_spinbox.setRange(0, 2147483647)
-        self.player_idle_timeout_spinbox.setValue(0)
+        self.player_idle_timeout_spinbox.setValue(default_server_properties['player-idle-timeout'])
 
         self.prevent_proxy_connections_checkbox = QCheckBox()
-        self.prevent_proxy_connections_checkbox.setChecked(False)
+        self.prevent_proxy_connections_checkbox.setChecked(default_server_properties['prevent-proxy-connections'])
 
         self.pvp_checkbox = QCheckBox()
-        self.pvp_checkbox.setChecked(True)
+        self.pvp_checkbox.setChecked(default_server_properties['pvp'])
 
         self.query_port_spinbox = SpinBox()
-        self.query_port_spinbox.setRange(1, 2**16-2)
-        self.query_port_spinbox.setValue(25565)
+        self.query_port_spinbox.setRange(1, 65534)
+        self.query_port_spinbox.setValue(default_server_properties['query.port'])
 
         self.rate_limit_spinbox = SpinBox()
         self.rate_limit_spinbox.setRange(0, 2147483647)
-        self.rate_limit_spinbox.setValue(0)
+        self.rate_limit_spinbox.setValue(default_server_properties['rate-limit'])
 
         self.rcon_password_lineedit = QLineEdit()
-        self.rcon_password_lineedit.setText('')
+        self.rcon_password_lineedit.setText(default_server_properties['rcon.password'])
 
         self.rcon_port_spinbox = SpinBox()
-        self.rcon_port_spinbox.setRange(1, 2**16-2)
-        self.rcon_port_spinbox.setValue(25575)
-
-        self.resource_pack_lineedit = QLineEdit()
-        self.resource_pack_lineedit.setText('')
-
-        self.resource_pack_prompt_lineedit = QLineEdit()
-        self.resource_pack_prompt_lineedit.setText('')
-
-        self.resource_pack_sha1_lineedit = QLineEdit()
-        self.resource_pack_sha1_lineedit.setText('')
+        self.rcon_port_spinbox.setRange(1, 65534)
+        self.rcon_port_spinbox.setValue(default_server_properties['rcon.port'])
 
         self.require_resource_pack_checkbox = QCheckBox()
-        self.require_resource_pack_checkbox.setChecked(False)
+        self.require_resource_pack_checkbox.setChecked(default_server_properties['require-resource-pack'])
+
+        self.resource_pack_lineedit = QLineEdit()
+        self.resource_pack_lineedit.setText(default_server_properties['resource-pack'])
+
+        self.resource_pack_prompt_lineedit = QLineEdit()
+        self.resource_pack_prompt_lineedit.setText(default_server_properties['resource-pack-prompt'])
+
+        self.resource_pack_sha1_lineedit = QLineEdit()
+        self.resource_pack_sha1_lineedit.setText(default_server_properties['resource-pack-sha1'])
 
         self.server_ip_lineedit = QLineEdit()
-        self.server_ip_lineedit.setText('')
+        self.server_ip_lineedit.setText(default_server_properties['server-ip'])
 
         self.server_port_spinbox = SpinBox()
-        self.server_port_spinbox.setRange(1, 2**16-2)
-        self.server_port_spinbox.setValue(25565)
+        self.server_port_spinbox.setRange(1, 65534)
+        self.server_port_spinbox.setValue(default_server_properties['server-port'])
 
         self.simulation_distance_spinbox = SpinBox()
         self.simulation_distance_spinbox.setRange(3, 32)
-        self.simulation_distance_spinbox.setValue(10)
+        self.simulation_distance_spinbox.setValue(default_server_properties['simulation-distance'])
 
         self.spawn_animals_checkbox = QCheckBox()
-        self.spawn_animals_checkbox.setChecked(True)
+        self.spawn_animals_checkbox.setChecked(default_server_properties['spawn-animals'])
 
         self.spawn_monsters_checkbox = QCheckBox()
-        self.spawn_monsters_checkbox.setChecked(True)
+        self.spawn_monsters_checkbox.setChecked(default_server_properties['spawn-monsters'])
 
         self.spawn_npcs_checkbox = QCheckBox()
-        self.spawn_npcs_checkbox.setChecked(True)
+        self.spawn_npcs_checkbox.setChecked(default_server_properties['spawn-npcs'])
 
         self.spawn_protection_spinbox = SpinBox()
         self.spawn_protection_spinbox.setRange(0, 2147483647)
-        self.spawn_protection_spinbox.setValue(16)
+        self.spawn_protection_spinbox.setValue(default_server_properties['spawn-protection'])
 
         self.sync_chunk_writes_checkbox = QCheckBox()
-        self.sync_chunk_writes_checkbox.setChecked(True)
+        self.sync_chunk_writes_checkbox.setChecked(default_server_properties['sync-chunk-writes'])
 
         self.text_filtering_config_lineedit = QLineEdit()
-        self.text_filtering_config_lineedit.setText('')
+        self.text_filtering_config_lineedit.setText(default_server_properties['text-filtering-config'])
 
         self.use_native_transport_checkbox = QCheckBox()
-        self.use_native_transport_checkbox.setChecked(True)
+        self.use_native_transport_checkbox.setChecked(default_server_properties['use-native-transport'])
 
         self.view_distance_spinbox = SpinBox()
         self.view_distance_spinbox.setRange(3, 32)
-        self.view_distance_spinbox.setValue(10)
+        self.view_distance_spinbox.setValue(default_server_properties['view-distance'])
 
         self.white_list_checkbox = QCheckBox()
-        self.white_list_checkbox.setChecked(False)
+        self.white_list_checkbox.setChecked(default_server_properties['white-list'])
 
         form_layout.addRow("Allow flight", self.allow_flight_checkbox)
         form_layout.addRow("Allow nether", self.allow_nether_checkbox)
@@ -337,10 +340,10 @@ class ServersWidget(QWidget):
         form_layout.addRow("Rate limit", self.rate_limit_spinbox)
         form_layout.addRow("RCON password", self.rcon_password_lineedit)
         form_layout.addRow("RCON port", self.rcon_port_spinbox)
+        form_layout.addRow("Require resource pack", self.require_resource_pack_checkbox)
         form_layout.addRow("Resource pack", self.resource_pack_lineedit)
         form_layout.addRow("Resource pack prompt", self.resource_pack_prompt_lineedit)
         form_layout.addRow("Resource pack SHA-1", self.resource_pack_sha1_lineedit)
-        form_layout.addRow("Require resource pack", self.require_resource_pack_checkbox)
         form_layout.addRow("Server IP", self.server_ip_lineedit)
         form_layout.addRow("Server port", self.server_port_spinbox)
         form_layout.addRow("Simulation distance", self.simulation_distance_spinbox)
