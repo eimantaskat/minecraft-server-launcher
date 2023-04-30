@@ -24,7 +24,7 @@ def start_server(thread_handler, servers, index, console_widget, toolbar_widget)
 
 
 def load_server(path):
-    settings_file = 'server_settings.json'
+    settings_file = 'server.settings'
     jar_pattern = '*.jar'
 
     jar_files = glob.glob(os.path.join(path, jar_pattern))

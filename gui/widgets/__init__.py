@@ -4,3 +4,5 @@ from .servers.servers_widget import ServersWidget
 from .progress_bar import ProgressBar
 from .console import ConsoleWidget
 from .running_servers_widget import RunningServersWidget
+from .combo_box import ComboBox
+from .spin_box import SpinBox
