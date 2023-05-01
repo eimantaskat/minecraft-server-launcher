@@ -2,7 +2,7 @@ import os
 import errno
 import glob
 from minecraft_server.server.server_settings import ServerSettings
-from minecraft_server.version import get_version
+from minecraft_server import VersionManager
 from gui.threads import ServerThread
 from minecraft_server.server.server import Server
 
@@ -32,7 +32,7 @@ def load_server(path):
     versions = []
     for file in jar_files:
         try:
-            version = get_version(file)
+            version = VersionManager.get_version_id(file)
             versions.append(version)
         except KeyError:
             pass

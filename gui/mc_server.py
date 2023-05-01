@@ -3,7 +3,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QSize, QEventLoop, QTimer
 from gui.widgets import ToolbarItem, SettingsWidget, ServersWidget, ProgressBar, RunningServersWidget
 from gui import threads
-from minecraft_server import Settings
+from minecraft_server import Settings, VersionManager
 
 
 class MinecraftServerLauncher(QMainWindow):
@@ -15,6 +15,9 @@ class MinecraftServerLauncher(QMainWindow):
         self.settings = Settings()
         self.settings.settings_changed.connect(self.refresh_widgets)
         self.settings.load_settings()
+
+        # Update cached versions
+        VersionManager.update_cached_versions(self.settings.versions_file)
 
         # Set window properties
         self.setWindowTitle("Minecraft Server Launcher")

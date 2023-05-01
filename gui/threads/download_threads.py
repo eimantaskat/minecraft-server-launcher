@@ -1,5 +1,5 @@
 from gui.threads.msl_thread import MslThread
-from minecraft_server import exceptions, verify_version
+from minecraft_server import exceptions, VersionManager
 from PyQt5.QtCore import pyqtSignal
 import os
 import requests
@@ -82,7 +82,7 @@ class DownloadThread(MslThread):
             raise exceptions.FileDownloadError(
                 f"An error occured while downloading {file_name} file")
         else:
-            verify_version(file_path, self.jar_version)
+            VersionManager.verify_version(file_path, self.jar_version)
 
         self.download_finished.emit()
 

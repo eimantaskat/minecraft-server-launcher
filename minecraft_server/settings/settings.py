@@ -10,13 +10,19 @@ class Settings(QObject):
     def __init__(self):
         super().__init__()
 
-        self.__file_folder = f"{os.getenv('APPDATA')}\.minecraft-server"
+        self.__file_folder = f"{os.getenv('APPDATA')}\\.minecraft-server"
         self.__full_file_path = os.path.expandvars(self.__file_folder)
-        self.__settings_file = f"{self.__full_file_path}\settings.json"
+        self.__settings_file = f"{self.__full_file_path}\\settings.json"
 
         # SETTINGS
-        self._data_location = f"{self.__file_folder}\servers"
+        self._data_location = f"{self.__file_folder}\\servers"
         self._auto_start = False
+        self._versions_file = f"{self.__file_folder}\\versions.json"
+
+
+    @property
+    def versions_file(self):
+        return self._versions_file
 
 
     @property
