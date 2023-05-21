@@ -13,6 +13,7 @@ class Server:
         self.server_jar = server_jar
         self.settings = server_settings
         self.settings.load_settings()
+        print(self.settings.version)
 
         self.world_version_id = self.get_world_version_id()
         self.server_version_id = VersionManager.get_version_id(self.server_jar)
@@ -68,25 +69,25 @@ class Server:
 
 
     def get_run_command(self):
-        command = ["java", "-Xmx" + str(self.settings.Xmx) + "M", "-Xms" + str(
-            self.settings.Xms) + "M", "-jar", f'"{self.server_jar}"']
-        if self.settings.bonusChest:
+        command = ["java", "-Xmx" + str(getattr(self.settings, 'Xmx', 1024)) + "M", "-Xms" + str(
+            getattr(self.settings, 'Xms', 1024)) + "M", "-jar", f'"{self.server_jar}"']
+        if getattr(self.settings, 'bonusChest', False):
             command.append("--bonusChest")
-        if self.settings.eraseCache:
+        if getattr(self.settings, 'eraseCache', False):
             command.append("--eraseCache")
-        if self.settings.forceUpgrade:
+        if getattr(self.settings, 'forceUpgrade', False):
             command.append("--forceUpgrade")
-        if self.settings.initSettings:
+        if getattr(self.settings, 'initSettings', False):
             command.append("--initSettings")
-        if self.settings.port:
+        if getattr(self.settings, 'port', False):
             command.append("--port")
             command.append(str(self.settings.port))
-        if self.settings.safeMode:
+        if getattr(self.settings, 'safeMode', False):
             command.append("--safeMode")
-        if self.settings.universe:
+        if getattr(self.settings, 'universe', False):
             command.append("--universe")
             command.append(self.settings.universe)
-        if self.settings.world:
+        if getattr(self.settings, 'world', False):
             command.append("--world")
             command.append(self.settings.world)
 

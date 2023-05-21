@@ -1,0 +1,56 @@
+{
+    "settings": [
+        {
+            "name": "Xmx (MB)",
+            "type": "spinbox",
+            "min_value": 0,
+            "max_value": 2147483647,
+            "default_value": 2048,
+            "key": "Xmx"
+        },
+        {
+            "name": "Xms (MB)",
+            "type": "spinbox",
+            "min_value": 0,
+            "max_value": 2147483647,
+            "default_value": 2048,
+            "key": "Xms"
+        },
+        {
+            "name": "Generate bonus chest",
+            "type": "checkbox",
+            "default_value": false,
+            "key": "bonusChest"
+        },
+        {
+            "name": "Erase cache",
+            "type": "checkbox",
+            "default_value": false,
+            "key": "eraseCache"
+        },
+        {
+            "name": "Force upgrade",
+            "type": "checkbox",
+            "default_value": false,
+            "key": "forceUpgrade"
+        },
+        {
+            "name": "Load level with vanilla datapack only",
+            "type": "checkbox",
+            "default_value": false,
+            "key": "safeMode"
+        },
+        {
+            "name": "Universe folder",
+            "type": "lineedit",
+            "default_value": "",
+            "key": "universe"
+        },
+        {
+            "name": "World name",
+            "type": "lineedit",
+            "default_value": "world",
+            "key": "world"
+        }
+    ]
+}

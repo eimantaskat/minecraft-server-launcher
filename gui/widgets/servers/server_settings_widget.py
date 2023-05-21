@@ -7,19 +7,19 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QGroupBox,
 )
-from minecraft_server.server import get_default_settings
 import json
 
 
 class ServerSettingsWidget(QWidget):
     def __init__(self, server_path=None, parent=None):
         super().__init__()
+        self.__config_file = 'server_settings.json'
 
         self.server_path = server_path
         self._get_server_settings()
         self.create_settings_layout()
 
-        self.settings_group = QGroupBox("Server Settings")
+        self.settings_group = QGroupBox('Server Settings')
         self.settings_group.setLayout(self.settings_layout)
 
         layout = QVBoxLayout()
@@ -33,37 +33,35 @@ class ServerSettingsWidget(QWidget):
     def _get_server_settings(self):
         if self.server_path:
             self._read_server_settings()
-        else:
-            self.server_settings = get_default_settings()
 
 
     def create_settings_layout(self):
         self.settings_layout = QFormLayout()
 
-        # create widgets for each setting
-        self.Xmx_spinbox = QSpinBox()
-        self.Xmx_spinbox.setRange(0, 2147483647)
-        self.Xmx_spinbox.setValue(self.server_settings['_Xmx'])
-        self.Xms_spinbox = QSpinBox()
-        self.Xms_spinbox.setRange(0, 2147483647)
-        self.Xms_spinbox.setValue(self.server_settings['_Xms'])
-        self.bonus_chest_checkbox = QCheckBox()
-        self.bonus_chest_checkbox.setChecked(self.server_settings['_bonusChest'])
-        self.erase_cache_checkbox = QCheckBox()
-        self.erase_cache_checkbox.setChecked(self.server_settings['_eraseCache'])
-        self.force_upgrade_checkbox = QCheckBox()
-        self.force_upgrade_checkbox.setChecked(self.server_settings['_forceUpgrade'])
-        self.safe_mode_checkbox = QCheckBox()
-        self.safe_mode_checkbox.setChecked(self.server_settings['_safeMode'])
-        self.universe_lineedit = QLineEdit()
-        self.universe_lineedit.setText(self.server_settings['_universe'])
+        self.settings_widgets = {}
 
-        # add widgets to form layout
-        self.settings_layout.addRow("Xmx (MB)", self.Xmx_spinbox)
-        self.settings_layout.addRow("Xms (MB)", self.Xms_spinbox)
-        self.settings_layout.addRow("Generate bonus chest", self.bonus_chest_checkbox)
-        self.settings_layout.addRow("Erase cache", self.erase_cache_checkbox)
-        self.settings_layout.addRow("Force upgrade", self.force_upgrade_checkbox)
-        self.settings_layout.addRow("Load level with vanilla datapack only",
-                        self.safe_mode_checkbox)
-        self.settings_layout.addRow("Universe folder", self.universe_lineedit)
+        with open(self.__config_file, 'r') as file:
+            config = json.load(file)
+            settings_config = config['settings']
+
+        for setting in settings_config:
+            setting_key = setting['key']
+            setting_name = setting['name']
+            setting_type = setting['type']
+            setting_value = setting['default_value']
+
+            if setting_type == 'spinbox':
+                self.settings_widgets[setting_key] = QSpinBox()
+                min_value = setting['min_value']
+                max_value = setting['max_value']
+                self.settings_widgets[setting_key].setRange(min_value, max_value)
+                self.settings_widgets[setting_key].setValue(setting_value)
+            elif setting_type == 'checkbox':
+                self.settings_widgets[setting_key] = QCheckBox()
+                self.settings_widgets[setting_key].setChecked(setting_value)
+            elif setting_type == 'lineedit':
+                self.settings_widgets[setting_key] = QLineEdit()
+                self.settings_widgets[setting_key].setText(setting_value)
+
+            self.settings_layout.addRow(setting_name,
+                                        self.settings_widgets[setting_key])

@@ -26,7 +26,6 @@ from minecraft_server.server import (
     ServerSettings,
     start_server,
     get_servers,
-    get_default_settings
 )
 import os
 import glob
@@ -146,7 +145,7 @@ class ServersWidget(QWidget):
         try:
             jar_path = jar_files[0]
 
-            server_settings = ServerSettings()
+            server_settings = ServerSettings(os.path.join(server_data_path, 'server.settings'), version)
             self.set_server_settings(server_settings, settings)
             server = Server(server_data_path, server_settings, jar_path)
 
@@ -162,27 +161,27 @@ class ServersWidget(QWidget):
 
 
     def set_server_settings(self, server_settings: ServerSettings, settings: dict):
-        server_settings.Xmx = settings.get('xmx')
-        server_settings.Xms = settings.get('xms')
-        server_settings.bonusChest = settings.get('bonus-chest')
-        server_settings.eraseCache = settings.get('erase-cache')
-        server_settings.forceUpgrade = settings.get('force-upgrade')
-        server_settings.safeMode = settings.get('safe-mode')
-        server_settings.universe = settings.get('universe')
+        for key, value in settings.items():
+            setattr(server_settings, key, value)
 
 
     def get_server_values(self):
         # TODO: rewrite
         settings = {}
+
         settings['name'] = self.name_lineedit.text()
         settings['version'] = self.version_select.currentText()
-        settings['xmx'] = self.settings_group.Xmx_spinbox.value()
-        settings['xms'] = self.settings_group.Xms_spinbox.value()
-        settings['bonus-chest'] = self.settings_group.bonus_chest_checkbox.isChecked()
-        settings['erase-cache'] = self.settings_group.erase_cache_checkbox.isChecked()
-        settings['force-upgrade'] = self.settings_group.force_upgrade_checkbox.isChecked()
-        settings['safe-mode'] = self.settings_group.safe_mode_checkbox.isChecked()
-        settings['universe'] = self.settings_group.universe_lineedit.text()
+
+        settings_widgets = self.settings_group.settings_widgets
+        settings_keys = settings_widgets.keys()
+        for key in settings_keys:
+            widget = settings_widgets[key]
+            if isinstance(widget, QSpinBox):
+                settings[key] = widget.value()
+            elif isinstance(widget, QCheckBox):
+                settings[key] = widget.isChecked()
+            elif isinstance(widget, QLineEdit):
+                settings[key] = widget.text()
 
         properties = {}
         properties['allow-flight'] = self.config_group.allow_flight_checkbox.isChecked()
