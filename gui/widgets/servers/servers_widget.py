@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QEventLoop
 
 from gui import threads
-from minecraft_server import VersionManager, server_properties, exceptions
+from minecraft_server import VersionManager, exceptions
 from gui.widgets.servers.servers_selection import ServerSelection
 from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
 from gui.widgets.servers.server_properties_widget import ServerPropertiesWidget
@@ -24,6 +24,7 @@ from gui.widgets.combo_box import ComboBox
 from minecraft_server.server import (
     Server,
     ServerSettings,
+    server_properties,
     start_server,
     get_servers,
 )

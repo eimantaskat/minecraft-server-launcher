@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QScrollArea
 )
 
-from minecraft_server import server_properties
+from minecraft_server.server import server_properties
 from gui.widgets.combo_box import ComboBox
 from gui.widgets.spin_box import SpinBox
 

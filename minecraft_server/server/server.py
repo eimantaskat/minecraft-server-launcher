@@ -2,7 +2,7 @@ import os
 from nbt import nbt
 from minecraft_server.server.server_settings import ServerSettings
 from minecraft_server import VersionManager
-from minecraft_server.server_properties import get_timestamp
+from minecraft_server.server.server_properties import get_timestamp
 
 
 class Server:
@@ -13,7 +13,6 @@ class Server:
         self.server_jar = server_jar
         self.settings = server_settings
         self.settings.load_settings()
-        print(self.settings.version)
 
         self.world_version_id = self.get_world_version_id()
         self.server_version_id = VersionManager.get_version_id(self.server_jar)

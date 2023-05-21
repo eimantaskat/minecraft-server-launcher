@@ -3,89 +3,85 @@ from minecraft_server import exceptions, VersionManager
 from PyQt5.QtCore import pyqtSignal
 import os
 import requests
-from bs4 import BeautifulSoup
+import json
+import hashlib
+
+
+def get_jar_versions(versions_file) -> list:
+	with open(versions_file, "r") as f:
+		return json.load(f)
 
 
 class DownloadThread(MslThread):
-    download_finished = pyqtSignal()
-    increment_progress_bar_value = pyqtSignal(int)
-    set_maximum_progress_bar_value = pyqtSignal(int)
-    set_progress_bar_description = pyqtSignal(str)
-    reset_progress_bar = pyqtSignal()
-    show_progress_bar = pyqtSignal()
+	download_finished = pyqtSignal()
+	increment_progress_bar_value = pyqtSignal(int)
+	set_maximum_progress_bar_value = pyqtSignal(int)
+	set_progress_bar_description = pyqtSignal(str)
+	reset_progress_bar = pyqtSignal()
+	show_progress_bar = pyqtSignal()
 
 
-    def __init__(self, jar_version, download_location):
-        super().__init__()
-        self.jar_version = jar_version
-        self.download_location = os.path.expandvars(download_location)
+	def __init__(self, jar_version, download_location):
+		super().__init__()
+		self.jar_version = jar_version
+		self.download_location = os.path.expandvars(download_location)
 
 
-    def _run(self):
-        file_name = f"server-{self.jar_version}.jar"
+	def _run(self):
+		versions_file = os.path.join(os.path.abspath(os.path.join(self.download_location ,"../..")), "versions.json")
 
-        # Create the download_location directory if it does not exist
-        os.makedirs(self.download_location, exist_ok=True)
+		available_versions = get_jar_versions(versions_file)
 
-        # URL of the website
-        url = f"https://mcversions.net/download/{self.jar_version}"
+		if self.jar_version in available_versions['release'].keys():
+			version_data = available_versions['release'][self.jar_version]
+		elif self.jar_version in available_versions['snapshot'].keys():
+			version_data = available_versions['snapshot'][self.jar_version]
+		elif self.jar_version in available_versions['old_alpha'].keys():
+			version_data = available_versions['old_alpha'][self.jar_version]
+		elif self.jar_version in available_versions['old_beta'].keys():
+			version_data = available_versions['old_beta'][self.jar_version]
+		else:
+			raise Exception(f"Version {self.jar_version} does not exist")
+		
+		file_name = f"server-{self.jar_version}.jar"
+		download_url = version_data['download']
+		sha1 = version_data['sha1']
 
-        # Send a GET request to the website
-        response = requests.get(url)
+		# Get the binary content of the file and set the stream to True
+		ok = False
+		while not ok:
+			try:
+				jar = requests.get(download_url, stream=True)
+				ok = True
+			except requests.exceptions.ConnectionError:  # TODO
+				pass
 
-        # Check if the response is ok
-        if response.status_code != 200:
-            raise exceptions.InvalidResponseStatusError(
-                f"{url} responded with {response.status_code} {response.reason}")
+		# Get the total size of the file
+		total_size = int(jar.headers.get("content-length", 0))
+		block_size = 1024  # 1 Kibibyte
 
-        # Parse the HTML content
-        soup = BeautifulSoup(response.text, "html.parser")
+		file_path = os.path.join(self.download_location, file_name)
 
-        # Find the server JAR file URL
-        download_url = soup.find("a", string="Download Server Jar")
+		self.reset_progress_bar.emit()
+		self.set_maximum_progress_bar_value.emit(total_size)
+		self.set_progress_bar_description.emit(f"Downloading {file_name}")
+		self.show_progress_bar.emit()
 
-        # Check if the download URL exists
-        if download_url is None:
-            raise exceptions.DownloadUrlDoesNotExistError(
-                f"The download url for minecraft server {self.jar_version} does not exist")
+		# Open the file to write
+		with open(file_path, "wb") as f:
+			for data in jar.iter_content(block_size):
+				# Update the progress bar
+				self.increment_progress_bar_value.emit(len(data))
+				f.write(data)
 
-        download_url = download_url['href']
+		if total_size != 0 and os.path.getsize(file_path) != total_size \
+				or not VersionManager.verify_sha1(file_path, sha1):
+			raise exceptions.FileDownloadError(
+				f"An error occured while downloading {file_name} file")
+		else:
+			VersionManager.verify_version(file_path, self.jar_version)
 
-        # Get the binary content of the file and set the stream to True
-        ok = False
-        while not ok:
-            try:
-                jar = requests.get(download_url, stream=True)
-                ok = True
-            except requests.exceptions.ConnectionError:  # TODO
-                pass
+		self.download_finished.emit()
 
-        # Get the total size of the file
-        total_size = int(jar.headers.get("content-length", 0))
-        block_size = 1024  # 1 Kibibyte
-
-        file_path = os.path.join(self.download_location, file_name)
-
-        self.reset_progress_bar.emit()
-        self.set_maximum_progress_bar_value.emit(total_size)
-        self.set_progress_bar_description.emit(f"Downloading {file_name}")
-        self.show_progress_bar.emit()
-
-        # Open the file to write
-        with open(file_path, "wb") as f:
-            for data in jar.iter_content(block_size):
-                # Update the progress bar
-                self.increment_progress_bar_value.emit(len(data))
-                f.write(data)
-
-        if total_size != 0 and os.path.getsize(file_path) != total_size:
-            raise exceptions.FileDownloadError(
-                f"An error occured while downloading {file_name} file")
-        else:
-            VersionManager.verify_version(file_path, self.jar_version)
-
-        self.download_finished.emit()
-
-
-    def stop(self):
-        self.terminate() # TODO
+	def stop(self):
+		self.terminate() # TODO
