@@ -11,6 +11,8 @@ def start_server(thread_handler, servers, index, console_widget, toolbar_widget)
     print(index)
     running_servers = thread_handler.get_threads_by_class(ServerThread)
     if running_servers:
+        print(running_servers[0].status)
+        print(running_servers[0].info)
         return print("Server is already running!")
 
     console_widget.clear()

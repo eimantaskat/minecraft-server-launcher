@@ -77,3 +77,19 @@ class ServerThread(MslThread):
 
         output_str = str(output, 'utf-8')
         self.console_output.emit(output_str)
+        
+
+    @property
+    def status(self):
+        is_online = self.server.is_online()
+        if is_online:
+            return 'running'
+        elif self.server_process.running:
+            return 'starting'
+        else:
+            return 'stopped'
+
+
+    @property
+    def info(self):
+        return self.server.get_info()
