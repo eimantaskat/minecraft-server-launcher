@@ -249,7 +249,7 @@ class VersionManager:
 
 
 	@staticmethod
-	def get_minecraft_versions(versions_file, type='release'):
+	def get_minecraft_versions(versions_file, version_type='release'):
 		"""
 		Get a list of Minecraft versions
 
@@ -262,10 +262,11 @@ class VersionManager:
 		if versions == {}:
 			VersionManager.update_cached_versions(versions_file)
 			versions = VersionManager.read_versions_file(versions_file)
-		if type in versions:
-			return versions['release'].keys()
+		if version_type in versions:
+			sorted_versions = sorted(versions[version_type].keys(), key=lambda x: versions[version_type][x]['releaseTime'], reverse=True)
+			return sorted_versions
 		else:
-			raise Exception(f"Invalid version type: {type}. Valid types are: release, snapshot, old_beta, old_alpha")
+			raise Exception(f"Invalid version type: {version_type}. Valid types are: release, snapshot, old_beta, old_alpha")
 
 
 	@staticmethod
