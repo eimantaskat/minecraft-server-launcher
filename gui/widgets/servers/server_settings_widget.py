@@ -13,7 +13,7 @@ import json
 class ServerSettingsWidget(QWidget):
     def __init__(self, server_path=None, parent=None):
         super().__init__()
-        self.__config_file = 'server_settings.json'
+        self.__config_file = 'default_server_config.json'
 
         self.server_path = server_path
         self._get_server_settings()

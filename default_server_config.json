@@ -1,0 +1,450 @@
+{
+	"settings": [
+		{
+			"name": "Xmx (MB)",
+			"type": "spinbox",
+			"min_value": 0,
+			"max_value": 2147483647,
+			"default_value": 2048,
+			"key": "Xmx"
+		},
+		{
+			"name": "Xms (MB)",
+			"type": "spinbox",
+			"min_value": 0,
+			"max_value": 2147483647,
+			"default_value": 2048,
+			"key": "Xms"
+		},
+		{
+			"name": "Generate bonus chest",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "bonusChest"
+		},
+		{
+			"name": "Erase cache",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "eraseCache"
+		},
+		{
+			"name": "Force upgrade",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "forceUpgrade"
+		},
+		{
+			"name": "Load level with vanilla datapack only",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "safeMode"
+		},
+		{
+			"name": "Universe folder",
+			"type": "lineedit",
+			"default_value": "",
+			"key": "universe"
+		},
+		{
+			"name": "World name",
+			"type": "lineedit",
+			"default_value": "world",
+			"key": "world"
+		}
+	],
+	"properties": [
+		{
+			"name": "Allow flight",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "allow-flight"
+		},
+		{
+			"name": "Allow nether",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "allow-nether"
+		},
+		{
+			"name": "Broadcast console to ops",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "broadcast-console-to-ops"
+		},
+		{
+			"name": "Broadcast RCON to ops",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "broadcast-rcon-to-ops"
+		},
+		{
+			"name": "Difficulity",
+			"type": "combobox",
+			"default_value": "Easy",
+			"values": [
+				"Peaceful",
+				"Easy",
+				"Normal",
+				"Hard"
+			],
+			"key": "difficulty"
+		},
+		{
+			"name": "Enable command blocks",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "enable-command-block"
+		},
+		{
+			"name": "Enable JMX monitoring",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "enable-jmx-monitoring"
+		},
+		{
+			"name": "Enable query",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "enable-query"
+		},
+		{
+			"name": "Enable RCON",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "enable-rcon"
+		},
+		{
+			"name": "Enable status",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "enable-status"
+		},
+		{
+			"name": "Enforce secure profile",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "enforce-secure-profile"
+		},
+		{
+			"name": "Enforce whitelist",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "enforce-whitelist"
+		},
+		{
+			"name": "Entity broadcast range percentage",
+			"type": "spinbox",
+			"min_value": 10,
+			"max_value": 1000,
+			"default_value": 100,
+			"key": "entity-broadcast-range-percentage"
+		},
+		{
+			"name": "Force gamemode",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "force-gamemode"
+		},
+		{
+			"name": "Function permission level",
+			"type": "spinbox",
+			"min_value": 1,
+			"max_value": 4,
+			"default_value": 2,
+			"key": "function-permission-level"
+		},
+		{
+			"name": "Gamemode",
+			"type": "combobox",
+			"default_value": "Survival",
+			"values": [
+				"Survival",
+				"Creative",
+				"Adventure",
+				"Spectator"
+			],
+			"key": "gamemode"
+		},
+		{
+			"name": "Generate structures",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "generate-structures"
+		},
+		{
+			"name": "Generator settings",
+			"type": "lineedit",
+			"default_value": "{}",
+			"key": "generator-settings"
+		},
+		{
+			"name": "Hardcore",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "hardcore"
+		},
+		{
+			"name": "Hide online players",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "hide-online-players"
+		},
+		{
+			"name": "Initial disabled packs",
+			"type": "lineedit",
+			"default_value": "",
+			"key": "initial-disabled-packs"
+		},
+		{
+			"name": "Initial enabled packs",
+			"type": "lineedit",
+			"default_value": "vanilla",
+			"key": "initial-enabled-packs"
+		},
+		{
+			"name": "Level name",
+			"type": "lineedit",
+			"default_value": "world",
+			"key": "level-name"
+		},
+		{
+			"name": "Level seed",
+			"type": "lineedit",
+			"default_value": "",
+			"key": "level-seed"
+		},
+		{
+			"name": "Level type",
+			"type": "lineedit",
+			"default_value": "minecraft\\: normal",
+			"key": "level-type"
+		},
+		{
+			"name": "Max chained neighbor updates",
+			"type": "spinbox",
+			"min_value": -1,
+			"max_value": 2147483647,
+			"default_value": 1000000,
+			"key": "max-chained-neighbor-updates"
+		},
+		{
+			"name": "Max players",
+			"type": "spinbox",
+			"min_value": 0,
+			"max_value": 2147483647,
+			"default_value": 20,
+			"key": "max-players"
+		},
+		{
+			"name": "Max tick time",
+			"type": "spinbox",
+			"min_value": 1,
+			"max_value": 2147483647,
+			"default_value": 60000,
+			"key": "max-tick-time"
+		},
+		{
+			"name": "Max world size",
+			"type": "spinbox",
+			"min_value": 1,
+			"max_value": 29999984,
+			"default_value": 29999984,
+			"key": "max-world-size"
+		},
+		{
+			"name": "Motd",
+			"type": "lineedit",
+			"default_value": "A Minecraft Server",
+			"key": "motd"
+		},
+		{
+			"name": "Network compression threshold",
+			"type": "spinbox",
+			"min_value": -1,
+			"max_value": 2048,
+			"default_value": 256,
+			"key": "network-compression-threshold"
+		},
+		{
+			"name": "Online mode",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "online-mode"
+		},
+		{
+			"name": "Op permission level",
+			"type": "spinbox",
+			"min_value": 1,
+			"max_value": 4,
+			"default_value": 4,
+			"key": "op-permission-level"
+		},
+		{
+			"name": "Player idle timeout",
+			"type": "spinbox",
+			"min_value": 0,
+			"max_value": 2147483647,
+			"default_value": 0,
+			"key": "player-idle-timeout"
+		},
+		{
+			"name": "Prevent proxy connections",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "prevent-proxy-connections"
+		},
+		{
+			"name": "Chat preview",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "previews-chat"
+		},
+		{
+			"name": "Pvp",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "pvp"
+		},
+		{
+			"name": "Query port",
+			"type": "spinbox",
+			"min_value": 0,
+			"max_value": 65534,
+			"default_value": 25565,
+			"key": "query.port"
+		},
+		{
+			"name": "Rate limit",
+			"type": "spinbox",
+			"min_value": 0,
+			"max_value": 2147483647,
+			"default_value": 0,
+			"key": "rate-limit"
+		},
+		{
+			"name": "Rcon password",
+			"type": "lineedit",
+			"default_value": "",
+			"key": "rcon.password"
+		},
+		{
+			"name": "Rcon port",
+			"type": "spinbox",
+			"min_value": 0,
+			"max_value": 65534,
+			"default_value": 25575,
+			"key": "rcon.port"
+		},
+		{
+			"name": "Require resource pack",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "require-resource-pack"
+		},
+		{
+			"name": "Resource pack",
+			"type": "lineedit",
+			"default_value": "",
+			"key": "resource-pack"
+		},
+		{
+			"name": "Resource pack prompt",
+			"type": "lineedit",
+			"default_value": "",
+			"key": "resource-pack-prompt"
+		},
+		{
+			"name": "Resource pack sha1",
+			"type": "lineedit",
+			"default_value": "",
+			"key": "resource-pack-sha1"
+		},
+		{
+			"name": "Server ip",
+			"type": "lineedit",
+			"default_value": "",
+			"key": "server-ip"
+		},
+		{
+			"name": "Server port",
+			"type": "spinbox",
+			"min_value": 0,
+			"max_value": 65534,
+			"default_value": 25565,
+			"key": "server-port"
+		},
+		{
+			"name": "Simulation distance",
+			"type": "spinbox",
+			"min_value": 3,
+			"max_value": 32,
+			"default_value": 10,
+			"key": "simulation-distance"
+		},
+		{
+			"name": "Snooper enabled",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "snooper-enabled"
+		},
+		{
+			"name": "Spawn animals",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "spawn-animals"
+		},
+		{
+			"name": "Spawn monsters",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "spawn-monsters"
+		},
+		{
+			"name": "Spawn npc",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "spawn-npc"
+		},
+		{
+			"name": "Spawn protection",
+			"type": "spinbox",
+			"min_value": 0,
+			"max_value": 256,
+			"default_value": 16,
+			"key": "spawn-protection"
+		},
+		{
+			"name": "Sync chunk writes",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "sync-chunk-writes"
+		},
+		{
+			"name": "Text filtering config",
+			"type": "lineedit",
+			"default_value": "",
+			"key": "text-filtering-config"
+		},
+		{
+			"name": "Use native transport",
+			"type": "checkbox",
+			"default_value": true,
+			"key": "use-native-transport"
+		},
+		{
+			"name": "View distance",
+			"type": "spinbox",
+			"min_value": 3,
+			"max_value": 32,
+			"default_value": 10,
+			"key": "view-distance"
+		},
+		{
+			"name": "White list",
+			"type": "checkbox",
+			"default_value": false,
+			"key": "white-list"
+		}
+	]
+}
