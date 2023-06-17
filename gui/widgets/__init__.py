@@ -2,7 +2,7 @@ from .combo_box import ComboBox
 from .console import ConsoleWidget
 from .full_window_widget import FullWindowWidget
 from .progress_bar import ProgressBar
-from .running_servers_widget import RunningServersWidget
+from .servers.running_servers_widget import RunningServersWidget
 from .servers.servers_widget import ServersWidget
 from .settings.settings_widget import SettingsWidget
 from .spin_box import SpinBox

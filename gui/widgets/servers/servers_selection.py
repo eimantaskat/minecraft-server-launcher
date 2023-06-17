@@ -23,14 +23,11 @@ class ServerSelection(QWidget):
 
 		# Create the start button
 		self.start_button = QPushButton("Start")
-		self.hide_button = QPushButton("Hide")
-		self.hide_button.clicked.connect(lambda: self.main_window.hide_main_layout())
 		self.start_button.clicked.connect(lambda: self.start_function(
 			self.thread_handler, self.servers, self.server_select.currentIndex(), console_widget, stacked_widget))
 
 		# Add the widgets to the layout
 		self.servers_selection_layout.addWidget(self.server_select, 0, 0)
-		self.servers_selection_layout.addWidget(self.hide_button, 1, 0)
 		self.servers_selection_layout.addWidget(self.start_button, 0, 1)
 
 	def refresh(self, servers):

@@ -3,7 +3,7 @@ import os
 from mcstatus import JavaServer
 from nbt import nbt
 
-from minecraft_server import VersionManager
+from minecraft_server.version_manager import VersionManager
 from minecraft_server.server.server_properties import get_timestamp
 from minecraft_server.server.server_settings import ServerSettings
 

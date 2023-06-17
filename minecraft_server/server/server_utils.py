@@ -2,8 +2,8 @@ import errno
 import glob
 import os
 
-from gui.threads import ServerThread
-from minecraft_server import VersionManager
+from gui.threads.server_thread import ServerThread
+from minecraft_server.version_manager import VersionManager
 from minecraft_server.server.server import Server
 from minecraft_server.server.server_settings import ServerSettings
 
