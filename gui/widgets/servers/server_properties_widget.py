@@ -1,17 +1,11 @@
-from PyQt5.QtWidgets import (
-	QVBoxLayout,
-	QWidget,
-	QFormLayout,
-	QCheckBox,
-	QLineEdit,
-	QGroupBox,
-	QScrollArea
-)
+import json
 
-from minecraft_server.server import server_properties
+from PyQt5.QtWidgets import (QCheckBox, QFormLayout, QGroupBox, QLineEdit,
+							 QScrollArea, QVBoxLayout, QWidget)
+
 from gui.widgets.combo_box import ComboBox
 from gui.widgets.spin_box import SpinBox
-import json
+from minecraft_server.server import server_properties
 
 
 class ServerPropertiesWidget(QWidget):
@@ -34,14 +28,12 @@ class ServerPropertiesWidget(QWidget):
 		layout.addWidget(self.config_group)
 		self.setLayout(layout)
 
-
 	def _get_server_properties(self):
 		if self.server_path:
 			self.server_properties = server_properties.read(self.server_path)
 		else:
 			self.server_properties = server_properties.get_default_server_properties()
 			self.server_properties = server_properties.unstringify(self.server_properties)
-
 
 	def create_properties_layout(self):
 		properties_layout = QFormLayout()

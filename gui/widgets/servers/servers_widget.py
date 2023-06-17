@@ -1,35 +1,19 @@
-from PyQt5.QtWidgets import (
-	QHBoxLayout,
-	QLabel,
-	QVBoxLayout,
-	QWidget,
-	QTabWidget,
-	QComboBox,
-	QPushButton,
-	QFormLayout,
-	QSpinBox,
-	QCheckBox,
-	QLineEdit,
-	QGroupBox,
-	QScrollArea
-)
-from PyQt5.QtCore import Qt, QEventLoop
+import glob
+import os
+
+from PyQt5.QtCore import QEventLoop, Qt
+from PyQt5.QtWidgets import (QCheckBox, QComboBox, QHBoxLayout, QLabel,
+							 QLineEdit, QPushButton, QSpinBox, QTabWidget,
+							 QVBoxLayout, QWidget)
 
 from gui import threads
-from minecraft_server import VersionManager, exceptions
-from gui.widgets.servers.servers_selection import ServerSelection
-from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
-from gui.widgets.servers.server_properties_widget import ServerPropertiesWidget
 from gui.widgets.combo_box import ComboBox
-from minecraft_server.server import (
-	Server,
-	ServerSettings,
-	server_properties,
-	start_server,
-	get_servers,
-)
-import os
-import glob
+from gui.widgets.servers.server_properties_widget import ServerPropertiesWidget
+from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
+from gui.widgets.servers.servers_selection import ServerSelection
+from minecraft_server import VersionManager, exceptions
+from minecraft_server.server import (Server, ServerSettings, get_servers,
+									 server_properties, start_server)
 
 
 class ServersWidget(QWidget):
@@ -57,7 +41,6 @@ class ServersWidget(QWidget):
 		self.setLayout(self.layout)
 		self.setContentsMargins(0, 0, 0, 0)
 
-
 	def start_servers_tab(self):
 		servers_tab = QWidget()
 		servers_tab_layout = QVBoxLayout()
@@ -69,7 +52,6 @@ class ServersWidget(QWidget):
 			self, self.servers, self.thread_handler, start_server, self.console_widget, self.toolbar_widget)
 		servers_tab_layout.addWidget(self.servers_selection)
 		return servers_tab
-
 
 	def create_new_server_tab(self):
 		server_creation = QWidget()
@@ -108,12 +90,10 @@ class ServersWidget(QWidget):
 		servers_tab_layout.addWidget(server_creation)
 		return servers_tab
 
-
 	def refresh(self):
 		self.servers = get_servers(self.settings.data_location)
 		self.servers_selection.refresh(self.servers)
 		print('refresh servers')
-
 
 	def create_server(self):
 		settings, properties = self.get_server_values()
@@ -163,14 +143,11 @@ class ServersWidget(QWidget):
 
 		self.refresh()
 
-
 	def set_server_settings(self, server_settings: ServerSettings, settings: dict):
 		for key, value in settings.items():
 			setattr(server_settings, key, value)
 
-
 	def get_server_values(self):
-		# TODO: rewrite
 		settings = {}
 
 		settings['name'] = self.name_lineedit.text()

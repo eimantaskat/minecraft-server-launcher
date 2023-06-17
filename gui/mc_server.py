@@ -1,8 +1,11 @@
-from PyQt5.QtWidgets import QMainWindow, QAction, QStackedWidget, QVBoxLayout, QWidget, QToolBar, QFrame
+from PyQt5.QtCore import QEventLoop, QSize, Qt, QTimer
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt, QSize, QEventLoop, QTimer
-from gui.widgets import ToolbarItem, SettingsWidget, ServersWidget, ProgressBar, RunningServersWidget
+from PyQt5.QtWidgets import (QAction, QMainWindow, QStackedWidget, QToolBar,
+							 QVBoxLayout, QWidget)
+
 from gui import threads
+from gui.widgets import (ProgressBar, RunningServersWidget, ServersWidget,
+						 SettingsWidget, ToolbarItem)
 from minecraft_server import Settings, VersionManager
 
 

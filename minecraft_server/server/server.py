@@ -1,9 +1,11 @@
 import os
+
+from mcstatus import JavaServer
 from nbt import nbt
-from minecraft_server.server.server_settings import ServerSettings
+
 from minecraft_server import VersionManager
 from minecraft_server.server.server_properties import get_timestamp
-from mcstatus import JavaServer
+from minecraft_server.server.server_settings import ServerSettings
 
 
 class Server:
@@ -25,7 +27,6 @@ class Server:
 
 		self.name = os.path.split(self.path)[-1]
 
-
 	def get_world_folder(self):
 		if os.path.isabs(self.settings.universe):
 			universe_path = self.settings.universe
@@ -39,7 +40,6 @@ class Server:
 			return world_folder
 		return None
 
-
 	def get_world_version_id(self):
 		world_folder = self.get_world_folder()
 		if not world_folder:
@@ -49,7 +49,6 @@ class Server:
 		world_version_id = level_dat['Data']['Version']['Id'].value
 
 		return world_version_id
-
 
 	def get_world_version_name(self):
 		world_folder = self.get_world_folder()
@@ -61,12 +60,10 @@ class Server:
 
 		return world_version_id
 
-
 	def _verify_versions(self):
 		if self.world_version_id != self.server_version_id:
 			self.warnings.append(f"Server and world versions do not match: server version \
 			{self.server_version_name}, world version {self.world_version_name}")
-
 
 	def get_run_command(self):
 		command = ["java", "-Xmx" + str(getattr(self.settings, 'Xmx', 1024)) + "M", "-Xms" + str(
@@ -94,7 +91,6 @@ class Server:
 		command.append("--nogui")
 		return command
 
-
 	def agree_to_eula(self):
 		comments = ["#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).\n"]
 		comments.append(f"#{get_timestamp()}\n")
@@ -104,7 +100,6 @@ class Server:
 			for comment in comments:
 				f.write(comment)
 			f.write('eula=true')
-
 
 	def is_online(self):
 		return bool(self.get_info())

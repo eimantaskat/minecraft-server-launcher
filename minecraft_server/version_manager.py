@@ -1,5 +1,5 @@
-import json
 import hashlib
+import json
 import os
 import time
 import zipfile
@@ -55,7 +55,6 @@ class VersionManager:
 
 		return version_name
 
-
 	@staticmethod
 	def get_version_id(jar_file):
 		"""
@@ -77,7 +76,6 @@ class VersionManager:
 
 		return version_id
 
-
 	@staticmethod
 	def verify_version(jar_file, expected_version):
 		"""
@@ -94,7 +92,6 @@ class VersionManager:
 		if version != expected_version:
 			raise IncorrectServerVersion(
 				f"Incorrect {jar_file} version. Expected {expected_version}, got {version}")
-
 
 	@staticmethod
 	def read_versions_file(versions_file):
@@ -114,7 +111,6 @@ class VersionManager:
 					pass
 		return versions
 
-
 	@staticmethod
 	def get_existing_versions(versions_file):
 		"""
@@ -126,7 +122,6 @@ class VersionManager:
 		"""
 		versions = VersionManager.read_versions_file(versions_file)
 		return VersionManager.get_version_ids(versions)
-
 
 	@staticmethod
 	def get_version_ids(manifest):
@@ -147,7 +142,6 @@ class VersionManager:
 			ids.extend(manifest.get(category, {}).keys())
 		return ids
 
-
 	@staticmethod
 	def get_version_manifest():
 		"""
@@ -164,7 +158,6 @@ class VersionManager:
 				print(f"Error retrieving version manifest: {e}. Retrying...")
 				time.sleep(5)
 		raise Exception(f"Unable to retrieve version manifest after {MAX_RETRIES} retries.")
-
 
 	@staticmethod
 	def get_version_data(url):
@@ -184,7 +177,6 @@ class VersionManager:
 				print(f"Error retrieving version data for {url}: {e}. Retrying...")
 				time.sleep(5)
 		raise Exception(f"Unable to retrieve version data for {url} after {MAX_RETRIES} retries.")
-
 
 	@staticmethod
 	def get_versions(version_manifest, versions_to_update):
@@ -224,7 +216,6 @@ class VersionManager:
 					version_dict['sha1'] = download_info['sha1']
 		return versions
 
-
 	@staticmethod
 	def update_cached_versions(versions_file):
 		"""
@@ -247,7 +238,6 @@ class VersionManager:
 			json.dump(updated_versions, f)
 			print(f"Updated cached versions in {versions_file}")
 
-
 	@staticmethod
 	def get_minecraft_versions(versions_file, version_type='release'):
 		"""
@@ -267,7 +257,6 @@ class VersionManager:
 			return sorted_versions
 		else:
 			raise Exception(f"Invalid version type: {version_type}. Valid types are: release, snapshot, old_beta, old_alpha")
-
 
 	@staticmethod
 	def verify_sha1(file, sha1):

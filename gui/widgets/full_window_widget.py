@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import (QHBoxLayout, QPushButton, QSizePolicy,
+							 QSpacerItem, QVBoxLayout, QWidget)
 
 
 class FullWindowWidget(QWidget):

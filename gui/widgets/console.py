@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import QWidget, QTextEdit, QLineEdit, QVBoxLayout
-from PyQt5.QtCore import pyqtSignal
 from PyQt5 import QtGui
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QLineEdit, QTextEdit, QVBoxLayout, QWidget
+
 
 class ConsoleWidget(QWidget):
     input_signal = pyqtSignal(str)
@@ -24,7 +25,6 @@ class ConsoleWidget(QWidget):
         layout.setSpacing(0)
         self.setLayout(layout)
 
-
     def write(self, text):
         cursor = self.console.textCursor()
         cursor.movePosition(QtGui.QTextCursor.End)
@@ -32,15 +32,12 @@ class ConsoleWidget(QWidget):
         self.console.insertPlainText(text)
         self.console.verticalScrollBar().setValue(self.console.verticalScrollBar().maximum())
 
-
-
     def _write_to_console(self):
         text = self.input.text()
         # A method to write a message to the console
         self.input_signal.emit(text)
         self.write(f"{text}\n")
         self.input.clear()
-
 
     def clear(self):
         self.console.clear()
