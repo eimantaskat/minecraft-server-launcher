@@ -6,3 +6,4 @@ from .console import ConsoleWidget
 from .running_servers_widget import RunningServersWidget
 from .combo_box import ComboBox
 from .spin_box import SpinBox
+from .full_window_widget import FullWindowWidget
