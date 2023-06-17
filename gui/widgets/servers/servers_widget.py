@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (QCheckBox, QComboBox, QHBoxLayout, QLabel,
 							 QVBoxLayout, QWidget)
 
 from gui import threads
+from gui.widgets.server_widget import ServerWidget
 from gui.widgets.combo_box import ComboBox
 from gui.widgets.servers.server_properties_widget import ServerPropertiesWidget
 from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
@@ -14,7 +15,6 @@ from gui.widgets.servers.servers_selection import ServerSelection
 from minecraft_server import VersionManager, exceptions
 from minecraft_server.server import (Server, ServerSettings, get_servers,
 									 server_properties, start_server)
-
 
 class ServersWidget(QWidget):
 	def __init__(self, parent):
@@ -30,8 +30,9 @@ class ServersWidget(QWidget):
 		self.versions_file = parent.settings.versions_file
 
 		self.tabs = QTabWidget()
-		self.tabs.addTab(self.start_servers_tab(), "Servers")
+		self.tabs.addTab(self.create_start_servers_tab(), "Start")
 		self.tabs.addTab(self.create_new_server_tab(), "New server")
+		self.tabs.addTab(self.create_servers_tab(), "Servers")
 
 		self.servers_label = QLabel("Servers")
 
@@ -41,7 +42,7 @@ class ServersWidget(QWidget):
 		self.setLayout(self.layout)
 		self.setContentsMargins(0, 0, 0, 0)
 
-	def start_servers_tab(self):
+	def create_start_servers_tab(self):
 		servers_tab = QWidget()
 		servers_tab_layout = QVBoxLayout()
 		servers_tab_layout.setAlignment(Qt.AlignTop)
@@ -89,10 +90,23 @@ class ServersWidget(QWidget):
 		servers_tab.setLayout(servers_tab_layout)
 		servers_tab_layout.addWidget(server_creation)
 		return servers_tab
+	
+	def create_servers_tab(self):
+		servers_tab = QWidget()
+		servers_tab_layout = QVBoxLayout()
+		servers_tab_layout.setAlignment(Qt.AlignTop)
+		servers_tab.setLayout(servers_tab_layout)
+
+		self.servers = get_servers(self.settings.data_location)
+		for server in self.servers:
+			server_widget = ServerWidget(server)
+			servers_tab_layout.addWidget(server_widget)
+		return servers_tab
 
 	def refresh(self):
 		self.servers = get_servers(self.settings.data_location)
 		self.servers_selection.refresh(self.servers)
+		# TODO: refresh servers tab
 		print('refresh servers')
 
 	def create_server(self):

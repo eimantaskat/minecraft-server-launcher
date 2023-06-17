@@ -7,3 +7,4 @@ from .servers.servers_widget import ServersWidget
 from .settings.settings_widget import SettingsWidget
 from .spin_box import SpinBox
 from .toolbar_item import ToolbarItem
+from .server_widget import ServerWidget

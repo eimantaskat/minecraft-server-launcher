@@ -6,7 +6,7 @@ class ServerSettings:
 	def __init__(self, settings_file='', version=None) -> None:
 		self.__settings_file = settings_file
 		self.__version = version
-		self.__config_file = 'server_settings.json'
+		self.__config_file = 'default_server_config.json'
 
 		self.load_settings()
 
