@@ -9,12 +9,14 @@ from PyQt5.QtWidgets import (QCheckBox, QComboBox, QHBoxLayout, QLabel,
 from gui import threads
 from gui.widgets.server_widget import ServerWidget
 from gui.widgets.combo_box import ComboBox
+from gui.widgets.full_window_widget import FullWindowWidget
 from gui.widgets.servers.server_properties_widget import ServerPropertiesWidget
 from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
 from gui.widgets.servers.servers_selection import ServerSelection
 from minecraft_server import VersionManager, exceptions
 from minecraft_server.server import (Server, ServerSettings, get_servers,
 									 server_properties, start_server)
+
 
 class ServersWidget(QWidget):
 	def __init__(self, parent):
@@ -31,7 +33,7 @@ class ServersWidget(QWidget):
 
 		self.tabs = QTabWidget()
 		self.tabs.addTab(self.create_start_servers_tab(), "Start")
-		self.tabs.addTab(self.create_new_server_tab(), "New server")
+		# self.tabs.addTab(self.create_new_server_tab(), "New server")
 		self.tabs.addTab(self.create_servers_tab(), "Servers")
 
 		self.servers_label = QLabel("Servers")
@@ -54,7 +56,7 @@ class ServersWidget(QWidget):
 		servers_tab_layout.addWidget(self.servers_selection)
 		return servers_tab
 
-	def create_new_server_tab(self):
+	def create_new_server_widget(self):
 		server_creation = QWidget()
 		server_creation_layout = QVBoxLayout()
 		server_creation.setLayout(server_creation_layout)
@@ -97,10 +99,18 @@ class ServersWidget(QWidget):
 		servers_tab_layout.setAlignment(Qt.AlignTop)
 		servers_tab.setLayout(servers_tab_layout)
 
+		# Add a button for creating a new server
+		create_server_button = QPushButton("Add New Server")
+		servers_tab_layout.addWidget(create_server_button)
+
+		# Connect the button's clicked signal to the add_new_server function
+		create_server_button.clicked.connect(self.add_new_server)
+
 		self.servers = get_servers(self.settings.data_location)
 		for server in self.servers:
 			server_widget = ServerWidget(server)
 			servers_tab_layout.addWidget(server_widget)
+
 		return servers_tab
 
 	def refresh(self):
@@ -195,3 +205,8 @@ class ServersWidget(QWidget):
 
 		properties = server_properties.stringify(properties)
 		return settings, properties
+
+	def add_new_server(self):
+		new_server_creation_widget = self.create_new_server_widget()
+		new_server_widget = FullWindowWidget(self, widget=new_server_creation_widget)
+		new_server_widget.show()

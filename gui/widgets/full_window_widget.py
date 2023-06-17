@@ -3,10 +3,13 @@ from PyQt5.QtWidgets import (QHBoxLayout, QPushButton, QSizePolicy,
 
 
 class FullWindowWidget(QWidget):
-	def __init__(self, parent, layout):
+	def __init__(self, parent, widget=None, layout=None):
 		super().__init__()
 		self.parent = parent
 		self.main_window = parent.main_window
+
+		if layout is None and widget is None:
+			raise Exception("Either layout or widget must be provided")
 
 		main_layout = QVBoxLayout(self)
 		main_layout.setContentsMargins(0, 0, 0, 0)
@@ -27,9 +30,12 @@ class FullWindowWidget(QWidget):
 		main_layout.addWidget(header_widget)
 
 		# Create body widget with the provided layout
-		body_widget = QWidget()
-		body_widget.setLayout(layout)
-		main_layout.addWidget(body_widget)
+		if widget is not None:
+			main_layout.addWidget(widget)
+		else:
+			body_widget = QWidget()
+			body_widget.setLayout(layout)
+			main_layout.addWidget(body_widget)
 
 	def show(self):
 		self.main_window.hide_main_layout()
