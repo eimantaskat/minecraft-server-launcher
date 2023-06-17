@@ -35,6 +35,9 @@ import glob
 class ServersWidget(QWidget):
 	def __init__(self, parent):
 		super().__init__()
+		self.parent = parent
+		self.main_window = parent.main_window
+
 		self.thread_handler = parent.thread_handler
 		self.settings = parent.settings
 		self.progress_bar = parent.progress_bar
@@ -63,7 +66,7 @@ class ServersWidget(QWidget):
 
 		self.servers = get_servers(self.settings.data_location)
 		self.servers_selection = ServerSelection(
-			self.servers, self.thread_handler, start_server, self.console_widget, self.toolbar_widget)
+			self, self.servers, self.thread_handler, start_server, self.console_widget, self.toolbar_widget)
 		servers_tab_layout.addWidget(self.servers_selection)
 		return servers_tab
 
@@ -83,9 +86,9 @@ class ServersWidget(QWidget):
 		self.create_button = QPushButton("Create server")
 		self.create_button.clicked.connect(self.create_server)
 
-		self.settings_group = ServerSettingsWidget()
+		self.settings_group = ServerSettingsWidget(self)
 
-		self.config_group = ServerPropertiesWidget()
+		self.config_group = ServerPropertiesWidget(self)
 
 		self.name_lineedit = QLineEdit()
 		self.name_lineedit.setText(f"Minecraft server")

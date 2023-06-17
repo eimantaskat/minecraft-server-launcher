@@ -15,8 +15,11 @@ import json
 
 
 class ServerPropertiesWidget(QWidget):
-	def __init__(self, server_path=None, parent=None):
+	def __init__(self, parent, server_path=None):
 		super().__init__()
+		self.parent = parent
+		self.main_window = parent.main_window
+
 		self.__config_file = 'default_server_config.json'
 
 		self.server_path = server_path
