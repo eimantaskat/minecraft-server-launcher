@@ -1,13 +1,23 @@
-from PyQt5.QtWidgets import (QAction, QFileDialog, QHBoxLayout, QLabel, QMenu,
-							 QPushButton, QSizePolicy, QVBoxLayout, QWidget)
+import shutil
+
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (QAction, QFileDialog, QHBoxLayout, QLabel, QMenu,
+                             QPushButton, QSizePolicy, QVBoxLayout, QWidget)
+
+from minecraft_server.server import start_server
 
 
 class ServerWidget(QWidget):
-	def __init__(self, server_info):
+	def __init__(self, parent, server):
 		super().__init__()
-		self.server_info = server_info
+		self.parent = parent
+		self.main_window = parent.main_window
+		self.thread_handler = parent.thread_handler
+		self.console_widget = parent.console_widget
+		self.toolbar_widget = parent.toolbar_widget
+
+		self.server = server
 
 		layout = QHBoxLayout(self)
 
@@ -18,12 +28,12 @@ class ServerWidget(QWidget):
 		name_font.setBold(True)
 
 		# Server Name Label
-		name_label = QLabel(server_info.name)
+		name_label = QLabel(server.name)
 		name_label.setFont(name_font)
 		title_layout.addWidget(name_label)
 
 		# Server Version Label
-		version_label = QLabel(f"Version: {server_info.server_version_name}")
+		version_label = QLabel(f"Version: {server.server_version_name}")
 		title_layout.addWidget(version_label)
 
 		layout.addLayout(title_layout)
@@ -31,7 +41,7 @@ class ServerWidget(QWidget):
 		# Start Button
 		start_button = QPushButton("Start")
 		start_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-		start_button.clicked.connect(self.start_server)
+		start_button.clicked.connect(self.button_start_server)
 		layout.addWidget(start_button)
 
 		# Folder Button
@@ -46,12 +56,12 @@ class ServerWidget(QWidget):
 		more_button.clicked.connect(self.show_options)
 		layout.addWidget(more_button)
 
-	def start_server(self):
-		# Implement server start logic here
-		pass
+	def button_start_server(self):
+		start_server(self.thread_handler, self.server,
+		             self.console_widget, self.toolbar_widget)
 
 	def open_folder(self):
-		path = self.server_info.path
+		path = self.server.path
 		QFileDialog.getOpenFileUrl(self, 'Open Folder', QUrl.fromLocalFile(path))
 
 	def show_options(self):
@@ -75,13 +85,33 @@ class ServerWidget(QWidget):
 		menu.exec_(self.mapToGlobal(self.sender().pos()))
 
 	def edit_server(self):
-		# Implement edit server logic here
+		# TODO: Implement edit server logic here
 		pass
 
 	def duplicate_server(self):
-		# Implement duplicate server logic here
-		pass
+		# Create a new folder path for the duplicated server
+		duplicated_server_path = self.server.path + " copy"
+
+		try:
+			# Duplicate the server folder
+			shutil.copytree(self.server.path, duplicated_server_path)
+			
+			# Refresh the parent widget
+			self.parent.refresh()
+			
+		except Exception as e:
+			# Handle any errors that may occur during the duplication process
+			print("Error duplicating server:", str(e))
 
 	def delete_server(self):
-		# Implement delete server logic here
-		pass
+		# TODO: Add a confirmation dialog before deleting the server
+		try:
+			# Delete the server folder
+			shutil.rmtree(self.server.path)
+			
+			# Refresh the parent widget
+			self.parent.refresh()
+			
+		except Exception as e:
+			# Handle any errors that may occur during the deletion process
+			print("Error deleting server:", str(e))

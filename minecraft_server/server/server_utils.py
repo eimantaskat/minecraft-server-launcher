@@ -8,19 +8,19 @@ from minecraft_server.server.server import Server
 from minecraft_server.server.server_settings import ServerSettings
 
 
-def start_server(thread_handler, servers, index, console_widget, toolbar_widget):
-	print(index)
+def start_server_from_list(thread_handler, servers, index, console_widget, toolbar_widget):
+	server = servers[index]
+	start_server(thread_handler, server, console_widget, toolbar_widget)
+
+
+def start_server(thread_handler, server, console_widget, toolbar_widget):
 	running_servers = thread_handler.get_threads_by_class(ServerThread)
 	if running_servers:
-		print(running_servers[0].status)
-		print(running_servers[0].info)
 		return print("Server is already running!")
 
 	console_widget.clear()
-	selected_server = servers[index]
-	server_thread = ServerThread(selected_server)
+	server_thread = ServerThread(server)
 	server_thread.console_output.connect(console_widget.write)
-	# server_thread.stopped.connect(console_widget.clear)
 	console_widget.input_signal.connect(server_thread.send_command)
 	thread_handler.start_thread(server_thread)
 	toolbar_widget.mousePressEvent(None)

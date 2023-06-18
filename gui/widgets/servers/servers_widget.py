@@ -15,7 +15,7 @@ from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
 from gui.widgets.servers.servers_selection import ServerSelection
 from minecraft_server import VersionManager, exceptions
 from minecraft_server.server import (Server, ServerSettings, get_servers,
-									 server_properties, start_server)
+									 server_properties, start_server_from_list)
 
 
 class ServersWidget(QWidget):
@@ -52,7 +52,7 @@ class ServersWidget(QWidget):
 
 		self.servers = get_servers(self.settings.data_location)
 		self.servers_selection = ServerSelection(
-			self, self.servers, self.thread_handler, start_server, self.console_widget, self.toolbar_widget)
+			self, self.servers, self.thread_handler, start_server_from_list, self.console_widget, self.toolbar_widget)
 		servers_tab_layout.addWidget(self.servers_selection)
 		return servers_tab
 
@@ -100,24 +100,27 @@ class ServersWidget(QWidget):
 		self.servers_tab.setLayout(servers_tab_layout)
 
 		# Add a button for creating a new server
-		create_server_button = QPushButton("Add New Server")
-		servers_tab_layout.addWidget(create_server_button)
+		self.create_server_button = QPushButton("Add New Server")
+		servers_tab_layout.addWidget(self.create_server_button)
 
 		# Connect the button's clicked signal to the add_new_server function
-		create_server_button.clicked.connect(self.add_new_server)
+		self.create_server_button.clicked.connect(self.add_new_server)
 
 		self.servers = get_servers(self.settings.data_location)
 		for server in self.servers:
-			server_widget = ServerWidget(server)
+			server_widget = ServerWidget(self, server)
 			servers_tab_layout.addWidget(server_widget)
 
 		return self.servers_tab
 	
 	def refresh_servers(self):
+		# Get the index of the create_server_button
+		create_button_index = self.servers_tab.layout().indexOf(self.create_server_button)
+
 		# Clear the current server widgets
 		while self.servers_tab.layout().count() > 0:
 			item = self.servers_tab.layout().takeAt(0)
-			if item.widget():
+			if item.widget() != self.create_server_button:
 				item.widget().deleteLater()
 
 		# Get the updated list of servers
@@ -125,8 +128,11 @@ class ServersWidget(QWidget):
 
 		# Add the new server widgets
 		for server in self.servers:
-			server_widget = ServerWidget(server)
+			server_widget = ServerWidget(self, server)
 			self.servers_tab.layout().addWidget(server_widget)
+
+		# Add the create_server_button back to the layout at the original index
+		self.servers_tab.layout().insertWidget(create_button_index, self.create_server_button)
 
 	def refresh(self):
 		self.servers = get_servers(self.settings.data_location)
