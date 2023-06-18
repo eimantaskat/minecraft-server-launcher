@@ -34,7 +34,7 @@ class ServerSettings:
 		default_settings = {}
 		for setting in settings_config:
 			setting_key = setting['key']
-			setting_value = setting['default_value']
+			setting_value = setting['value']
 			default_settings[setting_key] = setting_value
 
 		return default_settings

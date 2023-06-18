@@ -1,11 +1,16 @@
 import shutil
 
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QAction, QFileDialog, QHBoxLayout, QLabel, QMenu,
-                             QPushButton, QSizePolicy, QVBoxLayout, QWidget)
+                             QPushButton, QLineEdit, QSizePolicy, QVBoxLayout, QWidget)
 
 from minecraft_server.server import start_server
+from minecraft_server import VersionManager
+from gui.widgets.combo_box import ComboBox
+from gui.widgets.servers.server_properties_widget import ServerPropertiesWidget
+from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
+from gui.widgets.full_window_widget import FullWindowWidget
 
 
 class ServerWidget(QWidget):
@@ -86,7 +91,9 @@ class ServerWidget(QWidget):
 
 	def edit_server(self):
 		# TODO: Implement edit server logic here
-		pass
+		edit_server_widget = self.create_edit_server_widget()
+		self.new_server_widget = FullWindowWidget(self, widget=edit_server_widget)
+		self.new_server_widget.show()
 
 	def duplicate_server(self):
 		# Create a new folder path for the duplicated server
@@ -115,3 +122,35 @@ class ServerWidget(QWidget):
 		except Exception as e:
 			# Handle any errors that may occur during the deletion process
 			print("Error deleting server:", str(e))
+
+	def create_edit_server_widget(self):
+		server_creation = QWidget()
+		server_creation_layout = QVBoxLayout()
+		server_creation.setLayout(server_creation_layout)
+
+		self.header_layout = QHBoxLayout()
+
+		self.save_button = QPushButton("Save")
+		self.save_button.clicked.connect(self.save_server)
+
+		self.settings_group = ServerSettingsWidget(self, self.server.path)
+
+		self.properties_group = ServerPropertiesWidget(self, self.server.path)
+
+		server_creation_layout.addLayout(self.header_layout)
+		server_creation_layout.addWidget(self.settings_group)
+		server_creation_layout.addWidget(self.properties_group)
+		server_creation_layout.addWidget(self.save_button)
+
+		servers_widget = QWidget()
+		servers_widget_layout = QVBoxLayout()
+		servers_widget_layout.setAlignment(Qt.AlignTop)
+		servers_widget.setLayout(servers_widget_layout)
+		servers_widget_layout.addWidget(server_creation)
+		return servers_widget
+	
+	def save_server(self):
+		self.settings_group.save_settings()
+		self.properties_group.save_properties()
+		self.new_server_widget.destroy()
+		self.parent.refresh()

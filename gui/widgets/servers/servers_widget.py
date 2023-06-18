@@ -86,12 +86,12 @@ class ServersWidget(QWidget):
 		server_creation_layout.addWidget(self.settings_group)
 		server_creation_layout.addWidget(self.config_group)
 
-		servers_tab = QWidget()
-		servers_tab_layout = QVBoxLayout()
-		servers_tab_layout.setAlignment(Qt.AlignTop)
-		servers_tab.setLayout(servers_tab_layout)
-		servers_tab_layout.addWidget(server_creation)
-		return servers_tab
+		servers_widget = QWidget()
+		servers_widget_layout = QVBoxLayout()
+		servers_widget_layout.setAlignment(Qt.AlignTop)
+		servers_widget.setLayout(servers_widget_layout)
+		servers_widget_layout.addWidget(server_creation)
+		return servers_widget
 	
 	def create_servers_tab(self):
 		self.servers_tab = QWidget()

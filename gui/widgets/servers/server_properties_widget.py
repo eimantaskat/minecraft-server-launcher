@@ -1,7 +1,8 @@
 import json
 
-from PyQt5.QtWidgets import (QCheckBox, QFormLayout, QGroupBox, QLineEdit,
-							 QScrollArea, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFormLayout, QGroupBox,
+                             QLineEdit, QScrollArea, QSpinBox, QVBoxLayout,
+                             QWidget)
 
 from gui.widgets.combo_box import ComboBox
 from gui.widgets.spin_box import SpinBox
@@ -33,7 +34,16 @@ class ServerPropertiesWidget(QWidget):
 			self.server_properties = server_properties.read(self.server_path)
 		else:
 			self.server_properties = server_properties.get_default_server_properties()
-			self.server_properties = server_properties.unstringify(self.server_properties)
+		self.server_properties = server_properties.unstringify(self.server_properties)
+
+	@staticmethod
+	def update_setting_values(dict_list, default_values):
+		# TODO: Remove duplicate code
+		for item in dict_list:
+			key = item['key']
+			if key in default_values:
+				item['value'] = default_values[key]
+		return dict_list
 
 	def create_properties_layout(self):
 		properties_layout = QFormLayout()
@@ -44,11 +54,14 @@ class ServerPropertiesWidget(QWidget):
 			config = json.load(file)
 			properties_config = config['properties']
 
+		if self.server_path:
+			self.update_setting_values(properties_config, self.server_properties)
+
 		for property in properties_config:
 			property_key = property['key']
 			property_name = property['name']
 			property_type = property['type']
-			property_value = property['default_value']
+			property_value = property['value']
 
 			if property_type == 'spinbox':
 				self.properties_widgets[property_key] = SpinBox()
@@ -77,3 +90,26 @@ class ServerPropertiesWidget(QWidget):
 		self.config_scroll_area.setWidgetResizable(True)
 
 		return self.config_scroll_area
+
+	def get_properties(self):
+		properties = {}
+
+		properties_widgets = self.properties_widgets
+		properties_keys = properties_widgets.keys()
+		for key in properties_keys:
+			widget = properties_widgets[key]
+			if isinstance(widget, QSpinBox):
+				properties[key] = widget.value()
+			elif isinstance(widget, QCheckBox):
+				properties[key] = widget.isChecked()
+			elif isinstance(widget, QLineEdit):
+				properties[key] = widget.text()
+			elif isinstance(widget, QComboBox):
+				properties[key] = widget.currentText()
+
+		properties = server_properties.stringify(properties)
+		return properties
+	
+	def save_properties(self):
+		properties = self.get_properties()
+		server_properties.update(self.server_path, properties)
