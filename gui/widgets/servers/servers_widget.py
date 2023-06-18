@@ -94,10 +94,10 @@ class ServersWidget(QWidget):
 		return servers_tab
 	
 	def create_servers_tab(self):
-		servers_tab = QWidget()
+		self.servers_tab = QWidget()
 		servers_tab_layout = QVBoxLayout()
 		servers_tab_layout.setAlignment(Qt.AlignTop)
-		servers_tab.setLayout(servers_tab_layout)
+		self.servers_tab.setLayout(servers_tab_layout)
 
 		# Add a button for creating a new server
 		create_server_button = QPushButton("Add New Server")
@@ -111,16 +111,34 @@ class ServersWidget(QWidget):
 			server_widget = ServerWidget(server)
 			servers_tab_layout.addWidget(server_widget)
 
-		return servers_tab
+		return self.servers_tab
+	
+	def refresh_servers(self):
+		# Clear the current server widgets
+		while self.servers_tab.layout().count() > 0:
+			item = self.servers_tab.layout().takeAt(0)
+			if item.widget():
+				item.widget().deleteLater()
+
+		# Get the updated list of servers
+		self.servers = get_servers(self.settings.data_location)
+
+		# Add the new server widgets
+		for server in self.servers:
+			server_widget = ServerWidget(server)
+			self.servers_tab.layout().addWidget(server_widget)
 
 	def refresh(self):
 		self.servers = get_servers(self.settings.data_location)
 		self.servers_selection.refresh(self.servers)
-		# TODO: refresh servers tab
+		self.refresh_servers()
 		print('refresh servers')
 
 	def create_server(self):
+		self.new_server_widget.destroy()
 		settings, properties = self.get_server_values()
+
+		settings['jar-avaliable'] = False
 		version = settings['version']
 
 		server_data_path = os.path.join(
@@ -208,5 +226,5 @@ class ServersWidget(QWidget):
 
 	def add_new_server(self):
 		new_server_creation_widget = self.create_new_server_widget()
-		new_server_widget = FullWindowWidget(self, widget=new_server_creation_widget)
-		new_server_widget.show()
+		self.new_server_widget = FullWindowWidget(self, widget=new_server_creation_widget)
+		self.new_server_widget.show()
