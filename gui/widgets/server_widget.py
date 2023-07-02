@@ -1,16 +1,16 @@
+import json
+import os
 import shutil
 
-from PyQt5.QtCore import QUrl, Qt
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QAction, QFileDialog, QHBoxLayout, QLabel, QMenu,
-                             QPushButton, QLineEdit, QSizePolicy, QVBoxLayout, QWidget)
+                             QPushButton, QSizePolicy, QVBoxLayout, QWidget)
 
-from minecraft_server.server import start_server
-from minecraft_server import VersionManager
-from gui.widgets.combo_box import ComboBox
+from gui.widgets.full_window_widget import FullWindowWidget
 from gui.widgets.servers.server_properties_widget import ServerPropertiesWidget
 from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
-from gui.widgets.full_window_widget import FullWindowWidget
+from minecraft_server.server import start_server
 
 
 class ServerWidget(QWidget):
@@ -98,14 +98,30 @@ class ServerWidget(QWidget):
 	def duplicate_server(self):
 		# Create a new folder path for the duplicated server
 		duplicated_server_path = self.server.path + " copy"
+		copy_number = 1
+
+		while os.path.exists(duplicated_server_path):
+			# Append copy number to the folder name
+			duplicated_server_path = self.server.path + f" copy ({copy_number})"
+			copy_number += 1
 
 		try:
 			# Duplicate the server folder
 			shutil.copytree(self.server.path, duplicated_server_path)
+
+			# Update the name in server.settings file
+			settings_file_path = os.path.join(duplicated_server_path, "server.settings")
+			with open(settings_file_path, 'r') as settings_file:
+				settings = json.load(settings_file)
 			
+			settings["name"] = f"{self.server.name} copy"
+			
+			with open(settings_file_path, 'w') as settings_file:
+				json.dump(settings, settings_file, indent=4)
+
 			# Refresh the parent widget
 			self.parent.refresh()
-			
+
 		except Exception as e:
 			# Handle any errors that may occur during the duplication process
 			print("Error duplicating server:", str(e))
@@ -151,6 +167,6 @@ class ServerWidget(QWidget):
 	
 	def save_server(self):
 		self.settings_group.save_settings()
-		self.properties_group.save_properties()
+		self.properties_group.save_properties(new_path=self.settings_group.server_path)
 		self.new_server_widget.destroy()
 		self.parent.refresh()

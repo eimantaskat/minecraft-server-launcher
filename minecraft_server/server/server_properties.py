@@ -4,18 +4,27 @@ from minecraft_server.utils import get_timestamp
 
 class ServerProperties:
 	def __init__(self, server_path=None, properties=None):
+		self._properties = None
 		if server_path is None:
-			self.server_path = None
+			self._server_path = None
 			self.properties_path = None
 		else:
-			self.server_path = os.path.abspath(server_path)
-			self.properties_path = os.path.join(self.server_path, 'server.properties')
-			self.read()
-		
+			self.server_path = server_path
+
 		if properties is not None:
 			self.properties = properties
 		elif self.properties is None:
 			self.read_default_server_properties()
+
+	@property
+	def server_path(self):
+		return self._server_path
+	
+	@server_path.setter
+	def server_path(self, server_path):
+		self._server_path = os.path.abspath(server_path)
+		self.properties_path = os.path.join(self._server_path, 'server.properties')
+		self.read()
 
 	@property
 	def properties(self):

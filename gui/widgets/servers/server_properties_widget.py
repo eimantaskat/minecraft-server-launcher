@@ -1,4 +1,5 @@
 import json
+import os
 
 from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFormLayout, QGroupBox,
                              QLineEdit, QScrollArea, QSpinBox, QVBoxLayout,
@@ -84,7 +85,10 @@ class ServerPropertiesWidget(QWidget):
 
 		return self.config_scroll_area
 
-	def save_properties(self):
+	def save_properties(self, new_path=None):
+		if new_path:
+			self.server_properties.server_path = new_path
+
 		properties = {}
 
 		properties_widgets = self.properties_widgets
