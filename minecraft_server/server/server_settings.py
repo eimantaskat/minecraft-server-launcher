@@ -17,15 +17,6 @@ class ServerSettings:
 		self.__dict__[name] = value
 		self.save_settings()
 
-	# def __getattr__(self, name):
-	#     default_settings = self.get_default_settings()
-	#     if name in default_settings:
-	#         self.__dict__[name] = default_settings[name]
-	#         self.save_settings()
-	#         return default_settings[name]
-	#     else:
-	#         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
-
 	def get_default_settings(self):
 		with open(self.__config_file, 'r') as file:
 			config = json.load(file)

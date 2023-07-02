@@ -15,7 +15,7 @@ from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
 from gui.widgets.servers.servers_selection import ServerSelection
 from minecraft_server import VersionManager, exceptions
 from minecraft_server.server import (Server, ServerSettings, get_servers,
-									 server_properties, start_server_from_list)
+									 ServerProperties, start_server_from_list)
 
 
 class ServersWidget(QWidget):
@@ -177,11 +177,12 @@ class ServersWidget(QWidget):
 		try:
 			jar_path = jar_files[0]
 
-			server_settings = ServerSettings(os.path.join(server_data_path, 'server.settings'), version)
+			server_settings = ServerSettings(settings_file=os.path.join(server_data_path, 'server.settings'), version=version)
 			self.set_server_settings(server_settings, settings)
 			server = Server(server_data_path, server_settings, jar_path)
 
-			server_properties.create(server_data_path, properties)
+			server_properties = ServerProperties(server_data_path, properties=properties)
+			server_properties.create()
 			server.agree_to_eula()
 		except IndexError:
 			raise exceptions.JarNotFound("No jar file found in server data path")
@@ -198,9 +199,6 @@ class ServersWidget(QWidget):
 	def get_server_values(self):
 		settings = {}
 
-		settings['name'] = self.name_lineedit.text()
-		settings['version'] = self.version_select.currentText()
-
 		settings_widgets = self.settings_group.settings_widgets
 		settings_keys = settings_widgets.keys()
 		for key in settings_keys:
@@ -211,6 +209,9 @@ class ServersWidget(QWidget):
 				settings[key] = widget.isChecked()
 			elif isinstance(widget, QLineEdit):
 				settings[key] = widget.text()
+
+		settings['name'] = self.name_lineedit.text()
+		settings['version'] = self.version_select.currentText()
 
 		properties = {}
 
@@ -227,7 +228,6 @@ class ServersWidget(QWidget):
 			elif isinstance(widget, QComboBox):
 				properties[key] = widget.currentText()
 
-		properties = server_properties.stringify(properties)
 		return settings, properties
 
 	def add_new_server(self):

@@ -47,7 +47,7 @@ def load_server(path):
 		# TODO raise custom error
 		raise Exception(f"Found {len(versions)} *.jar files")
 
-	settings = ServerSettings(os.path.join(path, settings_file), version)
+	settings = ServerSettings(settings_file=os.path.join(path, settings_file), version=version)
 
 	server = Server(path, settings, jar_files[0])
 

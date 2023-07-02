@@ -63,6 +63,7 @@ class ServerSettingsWidget(QWidget):
 
 		self.settings_widgets = {}
 
+
 		with open(self.__config_file, 'r') as file:
 			config = json.load(file)
 			settings_config = config['settings']

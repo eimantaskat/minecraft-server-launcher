@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFormLayout, QGroupBox,
 
 from gui.widgets.combo_box import ComboBox
 from gui.widgets.spin_box import SpinBox
-from minecraft_server.server import server_properties
+from minecraft_server.server import ServerProperties
 
 
 class ServerPropertiesWidget(QWidget):
@@ -18,7 +18,7 @@ class ServerPropertiesWidget(QWidget):
 		self.__config_file = 'default_server_config.json'
 
 		self.server_path = server_path
-		self._get_server_properties()
+		self.server_properties = ServerProperties(self.server_path)
 		self.create_properties_layout()
 
 		self.config_group = QGroupBox("Server configuration")
@@ -28,13 +28,6 @@ class ServerPropertiesWidget(QWidget):
 		layout = QVBoxLayout()
 		layout.addWidget(self.config_group)
 		self.setLayout(layout)
-
-	def _get_server_properties(self):
-		if self.server_path:
-			self.server_properties = server_properties.read(self.server_path)
-		else:
-			self.server_properties = server_properties.get_default_server_properties()
-		self.server_properties = server_properties.unstringify(self.server_properties)
 
 	@staticmethod
 	def update_setting_values(dict_list, default_values):
@@ -55,7 +48,7 @@ class ServerPropertiesWidget(QWidget):
 			properties_config = config['properties']
 
 		if self.server_path:
-			self.update_setting_values(properties_config, self.server_properties)
+			self.update_setting_values(properties_config, self.server_properties.properties)
 
 		for property in properties_config:
 			property_key = property['key']
@@ -91,7 +84,7 @@ class ServerPropertiesWidget(QWidget):
 
 		return self.config_scroll_area
 
-	def get_properties(self):
+	def save_properties(self):
 		properties = {}
 
 		properties_widgets = self.properties_widgets
@@ -107,9 +100,5 @@ class ServerPropertiesWidget(QWidget):
 			elif isinstance(widget, QComboBox):
 				properties[key] = widget.currentText()
 
-		properties = server_properties.stringify(properties)
-		return properties
-	
-	def save_properties(self):
-		properties = self.get_properties()
-		server_properties.update(self.server_path, properties)
+		self.server_properties.properties = properties
+		self.server_properties.write()
