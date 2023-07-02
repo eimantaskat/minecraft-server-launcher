@@ -1,4 +1,8 @@
+import logging
+
 from PyQt5.QtCore import Qt
+
+logger = logging.getLogger('msl')
 
 
 class ThreadHandler:
@@ -34,9 +38,9 @@ class ThreadHandler:
         Stop all running threads
         """
         for thread in self.threads:
-            print("Stopping thread:", thread)
+            logger.debug(f'Stopping thread: {thread}')
             thread.stop()
-        print("All threads stopped")
+        logger.info('All threads stopped')
 
     def terminate_all_threads(self):
         """
@@ -101,5 +105,4 @@ class ThreadHandler:
 
     def _handle_thread_exception(self, exception, message):
         # TODO handle exception
-        print("Exception in thread:")
-        print(message)
+        logger.error(f'Exception raised in thread: {message}')

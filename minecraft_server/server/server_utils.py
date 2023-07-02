@@ -1,11 +1,14 @@
 import errno
 import glob
+import logging
 import os
 
 from gui.threads.server_thread import ServerThread
-from minecraft_server.version_manager import VersionManager
 from minecraft_server.server.server import Server
 from minecraft_server.server.server_settings import ServerSettings
+from minecraft_server.version_manager import VersionManager
+
+logger = logging.getLogger('msl')
 
 
 def start_server_from_list(thread_handler, servers, index, console_widget, toolbar_widget):
@@ -16,7 +19,8 @@ def start_server_from_list(thread_handler, servers, index, console_widget, toolb
 def start_server(thread_handler, server, console_widget, toolbar_widget):
 	running_servers = thread_handler.get_threads_by_class(ServerThread)
 	if running_servers:
-		return print("Server is already running!")
+		logger.warning("Server is already running")
+		return
 
 	console_widget.clear()
 	server_thread = ServerThread(server)

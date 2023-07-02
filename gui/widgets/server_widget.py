@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import shutil
 
@@ -11,6 +12,8 @@ from gui.widgets.full_window_widget import FullWindowWidget
 from gui.widgets.servers.server_properties_widget import ServerPropertiesWidget
 from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
 from minecraft_server.server import start_server
+
+logger = logging.getLogger('msl')
 
 
 class ServerWidget(QWidget):
@@ -38,25 +41,25 @@ class ServerWidget(QWidget):
 		title_layout.addWidget(name_label)
 
 		# Server Version Label
-		version_label = QLabel(f"Version: {server.server_version_name}")
+		version_label = QLabel(f'Version: {server.server_version_name}')
 		title_layout.addWidget(version_label)
 
 		layout.addLayout(title_layout)
 
 		# Start Button
-		start_button = QPushButton("Start")
+		start_button = QPushButton('Start')
 		start_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 		start_button.clicked.connect(self.button_start_server)
 		layout.addWidget(start_button)
 
 		# Folder Button
-		folder_button = QPushButton("Folder")
+		folder_button = QPushButton('Folder')
 		folder_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 		folder_button.clicked.connect(self.open_folder)
 		layout.addWidget(folder_button)
 
 		# More Options Button
-		more_button = QPushButton("...")
+		more_button = QPushButton('...')
 		more_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 		more_button.clicked.connect(self.show_options)
 		layout.addWidget(more_button)
@@ -73,17 +76,17 @@ class ServerWidget(QWidget):
 		menu = QMenu(self)
 
 		# Edit Action
-		edit_action = QAction("Edit", self)
+		edit_action = QAction('Edit', self)
 		edit_action.triggered.connect(self.edit_server)
 		menu.addAction(edit_action)
 
 		# Duplicate Action
-		duplicate_action = QAction("Duplicate", self)
+		duplicate_action = QAction('Duplicate', self)
 		duplicate_action.triggered.connect(self.duplicate_server)
 		menu.addAction(duplicate_action)
 
 		# Delete Action
-		delete_action = QAction("Delete", self)
+		delete_action = QAction('Delete', self)
 		delete_action.triggered.connect(self.delete_server)
 		menu.addAction(delete_action)
 
@@ -97,12 +100,12 @@ class ServerWidget(QWidget):
 
 	def duplicate_server(self):
 		# Create a new folder path for the duplicated server
-		duplicated_server_path = self.server.path + " copy"
+		duplicated_server_path = self.server.path + ' copy'
 		copy_number = 1
 
 		while os.path.exists(duplicated_server_path):
 			# Append copy number to the folder name
-			duplicated_server_path = self.server.path + f" copy ({copy_number})"
+			duplicated_server_path = self.server.path + f' copy ({copy_number})'
 			copy_number += 1
 
 		try:
@@ -110,11 +113,11 @@ class ServerWidget(QWidget):
 			shutil.copytree(self.server.path, duplicated_server_path)
 
 			# Update the name in server.settings file
-			settings_file_path = os.path.join(duplicated_server_path, "server.settings")
+			settings_file_path = os.path.join(duplicated_server_path, 'server.settings')
 			with open(settings_file_path, 'r') as settings_file:
 				settings = json.load(settings_file)
 			
-			settings["name"] = f"{self.server.name} copy"
+			settings['name'] = f'{self.server.name} copy'
 			
 			with open(settings_file_path, 'w') as settings_file:
 				json.dump(settings, settings_file, indent=4)
@@ -124,7 +127,7 @@ class ServerWidget(QWidget):
 
 		except Exception as e:
 			# Handle any errors that may occur during the duplication process
-			print("Error duplicating server:", str(e))
+			logger.error(f'Erorr duplicating server: {str(e)}')
 
 	def delete_server(self):
 		# TODO: Add a confirmation dialog before deleting the server
@@ -137,7 +140,7 @@ class ServerWidget(QWidget):
 			
 		except Exception as e:
 			# Handle any errors that may occur during the deletion process
-			print("Error deleting server:", str(e))
+			logger.error(f'Error deleting server: {str(e)}')
 
 	def create_edit_server_widget(self):
 		server_creation = QWidget()
@@ -146,7 +149,7 @@ class ServerWidget(QWidget):
 
 		self.header_layout = QHBoxLayout()
 
-		self.save_button = QPushButton("Save")
+		self.save_button = QPushButton('Save')
 		self.save_button.clicked.connect(self.save_server)
 
 		self.settings_group = ServerSettingsWidget(self, self.server.path)

@@ -1,8 +1,11 @@
 import json
+import logging
 import os
 
 from PyQt5.QtWidgets import (QCheckBox, QFormLayout, QGroupBox, QLineEdit,
                              QSpinBox, QVBoxLayout, QWidget)
+
+logger = logging.getLogger('msl')
 
 
 class ServerSettingsWidget(QWidget):
@@ -43,7 +46,7 @@ class ServerSettingsWidget(QWidget):
 				os.rename(self.server_path, new_folder_path)
 				self.server_path = new_folder_path
 			except OSError as e:
-				print(f"Error renaming folder: {str(e)}")
+				logger.error(f"Error renaming folder: {str(e)}")
 				return
 
 		with open(self.server_path + '/server.settings', 'w') as file:

@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 import os
 import time
 import zipfile
@@ -7,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
-# from minecraft_server.msl_exceptions import IncorrectServerVersion
+logger = logging.getLogger('msl')
 
 IncorrectServerVersion = Exception
 
@@ -49,9 +50,9 @@ class VersionManager:
 				version_json = zip_ref.read('version.json')
 				# Load version.json as a dictionary
 				version_name = json.loads(version_json)
-				version_name = version_name["name"]
+				version_name = version_name['name']
 		except zipfile.BadZipFile:
-			version_name = "File corrupted"
+			version_name = 'File corrupted'
 
 		return version_name
 
@@ -70,9 +71,9 @@ class VersionManager:
 				version_json = zip_ref.read('version.json')
 				# Load version.json as a dictionary
 				version_id = json.loads(version_json)
-				version_id = version_id["id"]
+				version_id = version_id['id']
 		except zipfile.BadZipFile:
-			version_id = "File corrupted"
+			version_id = 'File corrupted'
 
 		return version_id
 
@@ -91,7 +92,7 @@ class VersionManager:
 		# Check the version number in the version.json file
 		if version != expected_version:
 			raise IncorrectServerVersion(
-				f"Incorrect {jar_file} version. Expected {expected_version}, got {version}")
+				f'Incorrect {jar_file} version. Expected {expected_version}, got {version}')
 
 	@staticmethod
 	def read_versions_file(versions_file):
@@ -155,9 +156,10 @@ class VersionManager:
 				response.raise_for_status()
 				return response.json()
 			except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-				print(f"Error retrieving version manifest: {e}. Retrying...")
-				time.sleep(5)
-		raise Exception(f"Unable to retrieve version manifest after {MAX_RETRIES} retries.")
+				logger.warning(f'Error retrieving version manifest: {e}. Retrying...')
+				time.sleep(1)
+		logger.error(f'Unable to retrieve version manifest after {MAX_RETRIES} retries')
+		raise Exception(f'Unable to retrieve version manifest after {MAX_RETRIES} retries.')
 
 	@staticmethod
 	def get_version_data(url):
@@ -174,9 +176,10 @@ class VersionManager:
 				response.raise_for_status()
 				return response.json()
 			except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-				print(f"Error retrieving version data for {url}: {e}. Retrying...")
-				time.sleep(5)
-		raise Exception(f"Unable to retrieve version data for {url} after {MAX_RETRIES} retries.")
+				logger.warning(f'Error retrieving version manifest: {e}. Retrying...')
+				time.sleep(1)
+		logger.error(f'Unable to retrieve version manifest after {MAX_RETRIES} retries')
+		raise Exception(f'Unable to retrieve version data for {url} after {MAX_RETRIES} retries.')
 
 	@staticmethod
 	def get_versions(version_manifest, versions_to_update):
@@ -225,18 +228,18 @@ class VersionManager:
 
 		:return: None
 		"""
-		print("Updating cached versions...")
+		logger.info(f'Updating cached versions in {versions_file}')
 		cached_versions = VersionManager.get_existing_versions(versions_file)
 		version_manifest = VersionManager.get_version_manifest()
 		version_ids = VersionManager.get_version_ids(version_manifest)
 		versions_to_update = [version_id for version_id in version_ids if version_id not in cached_versions]
-		print(f"Updating {len(versions_to_update)} versions...")
+		logger.debug(f'Found {len(versions_to_update)} versions to update')
 		versions = VersionManager.get_versions(version_manifest, versions_to_update)
 		current_versions = VersionManager.read_versions_file(versions_file)
 		updated_versions = merge_dicts(current_versions, versions)
 		with open(versions_file, 'w') as f:
 			json.dump(updated_versions, f)
-			print(f"Updated cached versions in {versions_file}")
+			logger.info(f'Updated cached versions in {versions_file}')
 
 	@staticmethod
 	def get_minecraft_versions(versions_file, version_type='release'):
@@ -256,11 +259,11 @@ class VersionManager:
 			sorted_versions = sorted(versions[version_type].keys(), key=lambda x: versions[version_type][x]['releaseTime'], reverse=True)
 			return sorted_versions
 		else:
-			raise Exception(f"Invalid version type: {version_type}. Valid types are: release, snapshot, old_beta, old_alpha")
+			raise Exception(f'Invalid version type: {version_type}. Valid types are: release, snapshot, old_beta, old_alpha')
 
 	@staticmethod
 	def verify_sha1(file, sha1):
-		print(f"Verifying {file}...")
+		logger.info(f'Verifying {file} SHA1 hash')
 		hash = hashlib.sha1()
 
 		with open(file, 'rb') as file:
@@ -272,8 +275,8 @@ class VersionManager:
 		# TODO: This is only for testing
 		hexdigest = hash.hexdigest()
 		if hexdigest != sha1:
-			print(f"Verification failed. Expected {sha1}, got {hexdigest}")
+			logger.error(f'Verification failed. Expected {sha1}, got {hexdigest}')
 			return False
 		else:
-			print("Verification successful")
+			logger.info(f'Verification successful')
 			return True

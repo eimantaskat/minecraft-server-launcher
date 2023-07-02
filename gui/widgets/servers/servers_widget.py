@@ -1,21 +1,24 @@
 import glob
+import logging
 import os
 
 from PyQt5.QtCore import QEventLoop, Qt
 from PyQt5.QtWidgets import (QCheckBox, QComboBox, QHBoxLayout, QLabel,
-							 QLineEdit, QPushButton, QSpinBox, QTabWidget,
-							 QVBoxLayout, QWidget)
+                             QLineEdit, QPushButton, QSpinBox, QTabWidget,
+                             QVBoxLayout, QWidget)
 
 from gui import threads
-from gui.widgets.server_widget import ServerWidget
 from gui.widgets.combo_box import ComboBox
 from gui.widgets.full_window_widget import FullWindowWidget
+from gui.widgets.server_widget import ServerWidget
 from gui.widgets.servers.server_properties_widget import ServerPropertiesWidget
 from gui.widgets.servers.server_settings_widget import ServerSettingsWidget
 from gui.widgets.servers.servers_selection import ServerSelection
 from minecraft_server import VersionManager, exceptions
-from minecraft_server.server import (Server, ServerSettings, get_servers,
-									 ServerProperties, start_server_from_list)
+from minecraft_server.server import (Server, ServerProperties, ServerSettings,
+                                     get_servers, start_server_from_list)
+
+logger = logging.getLogger('msl')
 
 
 class ServersWidget(QWidget):
@@ -138,7 +141,7 @@ class ServersWidget(QWidget):
 		self.servers = get_servers(self.settings.data_location)
 		self.servers_selection.refresh(self.servers)
 		self.refresh_servers()
-		print('refresh servers')
+		logger.debug("Refreshed servers")
 
 	def create_server(self):
 		self.new_server_widget.destroy()
