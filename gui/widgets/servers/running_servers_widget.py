@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLabel, QTabWidget, QVBoxLayout, QWidget
 
-from gui.widgets import ConsoleWidget
+from gui.widgets.console import ConsoleWidget
 
 
 class RunningServersWidget(QWidget):

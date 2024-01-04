@@ -4,8 +4,11 @@ from PyQt5.QtWidgets import (QAction, QMainWindow, QStackedWidget, QToolBar,
 							 QVBoxLayout, QWidget)
 
 from gui import threads
-from gui.widgets import (ProgressBar, RunningServersWidget, ServersWidget,
-						 SettingsWidget, ToolbarItem)
+from gui.widgets.progress_bar import ProgressBar
+from gui.widgets.servers.running_servers_widget import RunningServersWidget
+from gui.widgets.servers.servers_widget import ServersWidget
+from gui.widgets.settings.settings_widget import SettingsWidget
+from gui.widgets.toolbar_item import ToolbarItem
 from minecraft_server import Settings, VersionManager
 
 

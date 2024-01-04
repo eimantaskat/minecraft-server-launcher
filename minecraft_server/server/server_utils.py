@@ -4,6 +4,7 @@ import logging
 import os
 
 from gui.threads.server_thread import ServerThread
+from gui.widgets.popup_widget import Popup
 from minecraft_server.server.server import Server
 from minecraft_server.server.server_settings import ServerSettings
 from minecraft_server.version_manager import VersionManager
@@ -11,20 +12,24 @@ from minecraft_server.version_manager import VersionManager
 logger = logging.getLogger('msl')
 
 
-def start_server_from_list(thread_handler, servers, index, console_widget, toolbar_widget):
+def start_server_from_list(main_window, thread_handler, servers, index, console_widget, toolbar_widget):
 	server = servers[index]
-	start_server(thread_handler, server, console_widget, toolbar_widget)
+	start_server(main_window, thread_handler, server, console_widget, toolbar_widget)
 
 
-def start_server(thread_handler, server, console_widget, toolbar_widget):
+def start_server(main_window, thread_handler, server, console_widget, toolbar_widget):
 	running_servers = thread_handler.get_threads_by_class(ServerThread)
 	if running_servers:
 		logger.warning("Server is already running")
 		return
+	
+	def create_popup(title, message, icon):
+		Popup(main_window, title, message, icon)
 
 	console_widget.clear()
 	server_thread = ServerThread(server)
 	server_thread.console_output.connect(console_widget.write)
+	server_thread.popup.connect(create_popup)
 	console_widget.input_signal.connect(server_thread.send_command)
 	thread_handler.start_thread(server_thread)
 	toolbar_widget.mousePressEvent(None)

@@ -24,7 +24,7 @@ class ServerSelection(QWidget):
 		# Create the start button
 		self.start_button = QPushButton("Start")
 		self.start_button.clicked.connect(lambda: self.start_function(
-			self.thread_handler, self.servers, self.server_select.currentIndex(), console_widget, stacked_widget))
+			self.main_window, self.thread_handler, self.servers, self.server_select.currentIndex(), console_widget, stacked_widget))
 
 		# Add the widgets to the layout
 		self.servers_selection_layout.addWidget(self.server_select, 0, 0)
