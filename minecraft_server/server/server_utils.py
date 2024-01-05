@@ -29,6 +29,7 @@ def start_server(main_window, thread_handler, server, console_widget, toolbar_wi
 	console_widget.clear()
 	server_thread = ServerThread(server)
 	server_thread.console_output.connect(console_widget.write)
+	server_thread.help_output.connect(console_widget.set_available_commands)
 	server_thread.popup.connect(create_popup)
 	console_widget.input_signal.connect(server_thread.send_command)
 	thread_handler.start_thread(server_thread)

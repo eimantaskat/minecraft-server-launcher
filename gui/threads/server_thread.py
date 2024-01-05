@@ -31,6 +31,7 @@ class Process(QProcess):
 
 
 class ServerThread(MslThread):
+    help_output = pyqtSignal(str)
     console_output = pyqtSignal(str)
     stopped = pyqtSignal()
     popup = pyqtSignal(str, str, str)
@@ -40,6 +41,7 @@ class ServerThread(MslThread):
         self.server = server
         self.cwd = os.path.abspath(os.path.join(self.server.server_jar, '..'))
 
+        self._waiting_for_help = False
 
     def _run(self):
         java_version = get_java_version()
@@ -71,21 +73,17 @@ class ServerThread(MslThread):
         self.server_process.waitForFinished()
         logger.info('Server stopped')
 
-
     def send_command(self, command):
         if command == 'stop':
             self.stop()
         else:
             self.server_process.write(bytes(f'{command}\n'.encode()))
-        self._read_process_output()
-
 
     def stop(self):
         self.server_process.write(b'stop\n')
         self.server_process.running = False
         
         self.stopped.emit()
-
 
     def _read_process_output(self):
         try:
@@ -98,9 +96,18 @@ class ServerThread(MslThread):
             return
 
         output_str = str(output, 'utf-8')
-        self.console_output.emit(output_str)
-        
+        if self._waiting_for_help:
+            self.help_output.emit(output_str)
+            self._waiting_for_help = False
+        else:
+            self.console_output.emit(output_str)
 
+        # This might read the wrong output but I dont give a fuck
+        # The worst that could happen is auto-completion not working and some server output missing
+        if 'For help, type "help"' in output_str:
+            self.server_process.write(bytes(f'help\n'.encode()))
+            self._waiting_for_help = True
+        
     @property
     def status(self):
         is_online = self.server.is_online()
@@ -110,7 +117,6 @@ class ServerThread(MslThread):
             return 'starting'
         else:
             return 'stopped'
-
 
     @property
     def info(self):
