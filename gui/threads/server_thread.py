@@ -2,7 +2,6 @@ import logging
 import os
 
 from PyQt5.QtCore import QProcess, pyqtSignal
-import debugpy
 
 from minecraft_server.utils import get_java_version
 
@@ -45,12 +44,14 @@ class ServerThread(MslThread):
     def _run(self):
         java_version = get_java_version()
         if not java_version:
-            logger.error('JAVA is not installed')
+            logger.error('Java is not installed')
             self.popup.emit(
-                'JAVA is not installed',
-                'Running Minecraft Server requires JAVA. Please install it and try to run the server again.',
-                'error')
+                'Java is not installed',
+                'Running Minecraft Server requires Java. Please install it and try to run the server again.',
+                'warning')
             return
+
+        logger.info(f'Using Java version {java_version}')
 
         run_command = self.server.get_run_command()
         run_command = ' '.join(run_command)
@@ -60,9 +61,13 @@ class ServerThread(MslThread):
         self.server_process.readyReadStandardOutput.connect(self._read_process_output)
         self.server_process.readyReadStandardError.connect(self._read_process_output)
         self.server_process.start(run_command)
+
         logger.info(f'Starting server with command: {run_command}')
         if not self.server_process.waitForStarted():
             logger.error(f'Error starting process: {self.server_process.errorString()}')
+
+        process_id = self.server_process.processId()
+        logger.info(f'Server started with PID {process_id}')
         self.server_process.waitForFinished()
         logger.info('Server stopped')
 
