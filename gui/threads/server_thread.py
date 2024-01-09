@@ -1,4 +1,5 @@
 import logging
+import time
 import os
 
 from PyQt5.QtCore import QProcess, pyqtSignal
@@ -86,6 +87,9 @@ class ServerThread(MslThread):
         self.stopped.emit()
 
     def _read_process_output(self):
+        if self._waiting_for_help:
+            time.sleep(0.1)
+
         try:
             output = self.server_process.readAllStandardOutput()
             if not output:

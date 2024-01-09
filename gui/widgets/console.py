@@ -34,6 +34,7 @@ class ConsoleWidget(QtWidgets.QWidget):
 
         # List of available commands for autocompletion
         self.available_commands = []
+        self._suggestions = []
 
         # Install an event filter to capture Tab key events
         self.input.installEventFilter(self)
@@ -88,12 +89,23 @@ class ConsoleWidget(QtWidgets.QWidget):
 
         current_text = self.input.text().lower()
 
+        # current_input = current_text.split(' ')
         current_main_command, *current_options = current_text.split(' ')
-        matching_commands = [cmd for cmd in self.available_commands.keys() if cmd.lower().startswith(current_main_command)]
+        if current_options:
+            matching_commands = [cmd for cmd in self._suggestions if cmd.lower().startswith(current_options[-1])]
+        else:
+            matching_commands = [cmd for cmd in self.available_commands.keys() if cmd.lower().startswith(current_main_command)]
         if matching_commands:
             common_prefix = os.path.commonprefix(matching_commands)
-            if common_prefix != current_text and len(common_prefix) > len(current_main_command):
-                self.input.setText(common_prefix)
+            if common_prefix != current_text:
+                current_input = self.input.text()
+                current_input = current_input.split(' ')
+                if isinstance(current_input, list) and len(current_input) > 1:
+                    current_input = ' '.join(current_input[:-1])
+                    current_input += ' '
+                else:
+                    current_input = ''
+                self.input.setText(current_input + common_prefix)
 
     def _input_text_changed(self, text):
         if not self._server_is_active:
@@ -101,11 +113,56 @@ class ConsoleWidget(QtWidgets.QWidget):
 
         current_main_command, *current_options = text.split(' ')
 
-        if not current_options or current_main_command not in self.available_commands.keys():
+        matching_commands = [cmd for cmd in self.available_commands.keys() if cmd.lower().startswith(current_main_command)]
+
+        if not matching_commands:
             return
 
-        command_options = self.available_commands[current_main_command]
-        print(command_options)
+        if len(matching_commands) > 1:
+            # TODO: Show a list of matching commands
+            self._suggestions = matching_commands
+            print(f'Multiple matching commands: {matching_commands}')
+            return
+
+        matched_command = matching_commands[0]
+
+        if current_main_command != matched_command:
+            self._suggestions = [matched_command]
+            print(f'Autocompleted command: {matched_command}')
+            return
+
+        if not current_options:
+            return
+
+        command_arguments = self.available_commands[matched_command]
+
+        isOptional = False
+        isVariable = False
+
+        argument_index = len(current_options) - 1
+        if argument_index >= len(command_arguments):
+            return
+
+        argument_suggestions = command_arguments[argument_index]
+
+        if argument_suggestions.startswith('('):
+            argument_suggestions = argument_suggestions[1:-1]
+            suggestions = argument_suggestions.split('|')
+        else:
+            suggestions = [argument_suggestions]
+
+        for suggestionIdx in range(len(suggestions)):
+            if suggestions[suggestionIdx].startswith('['):
+                suggestions[suggestionIdx] = suggestions[suggestionIdx][1:-1]
+                isOptional = True
+
+            if suggestions[suggestionIdx].startswith('<'):
+                suggestions[suggestionIdx] = suggestions[suggestionIdx][1:-1]
+                isVariable = True
+
+        matched_suggestions = [suggestion for suggestion in suggestions if suggestion.lower().startswith(current_options[-1].lower())]
+        self._suggestions = matched_suggestions
+        print(matched_suggestions, isOptional, isVariable)
 
     def clear(self):
         self.console.clear()
@@ -115,7 +172,20 @@ class ConsoleWidget(QtWidgets.QWidget):
 
     def eventFilter(self, obj, event):
         if obj == self.input and event.type() == QtGui.QKeyEvent.KeyPress:
-            if event.key() == Qt.Key_Tab:
+            if event.key() == Qt.Key_Up:
+                # Handle the up arrow key to cycle through previous commands
+                if self.current_command_index > 0:
+                    self.current_command_index -= 1
+                    self.input.setText(self.prev_commands[self.current_command_index])
+            elif event.key() == Qt.Key_Down:
+                # Handle the down arrow key to cycle through next commands
+                if self.current_command_index < len(self.prev_commands) - 1:
+                    self.current_command_index += 1
+                    self.input.setText(self.prev_commands[self.current_command_index])
+                elif self.current_command_index == len(self.prev_commands) - 1:
+                    self.input.setText('')
+                    self.current_command_index += 1
+            elif event.key() == Qt.Key_Tab:
                 # Handle the Tab key for autocompletion
                 self._autocomplete_command()
                 return True  # Consume the event

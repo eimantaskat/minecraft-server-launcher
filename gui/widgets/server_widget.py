@@ -65,7 +65,7 @@ class ServerWidget(QWidget):
 		layout.addWidget(more_button)
 
 	def button_start_server(self):
-		start_server(self.thread_handler, self.server,
+		start_server(self.main_window, self.thread_handler, self.server,
 		             self.console_widget, self.toolbar_widget)
 
 	def open_folder(self):
